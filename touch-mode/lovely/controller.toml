@@ -5,12 +5,33 @@ version = "1.0.0"
 [patches.pattern]
 target = "engine/controller.lua"
 pattern = '''
+self.collision_list
+'''
+position = "before"
+payload = '''
+--Touch controller
+self.touch_control = {s_tap = {target = nil,handled = true}, l_press = {target = nil, handled = true}}
+'''
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''
 --The object being dragged
 if self.dragging.target then
+    self.dragging.target:drag()
+end
 '''
-position = "after"
+position = "before"
 payload = '''
-create_drag_target_from_card(self.dragging.target)
+--The object being dragged
+if not self.dragging.handled then
+    print(self.cursor_down.time)
+    create_drag_target_from_card(self.dragging.target)
+    self.dragging.handled = true
+end
 '''
 match_indent = false
 times = 1
@@ -28,17 +49,4 @@ self.HID.touch = HID_type == 'touch' or HID_type == 'mouse'
 match_indent = false
 times = 1
 
-[[patches]]
-[patches.pattern]
-target = "engine/controller.lua"
-pattern = '''
-self.collision_list
-'''
-position = "before"
-payload = '''
---Touch controller
-self.touch_control = {s_tap = {target = nil,handled = true}, l_press = {target = nil, handled = true}}
-'''
-match_indent = false
-times = 1
 
