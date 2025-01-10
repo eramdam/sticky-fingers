@@ -1,0 +1,14 @@
+{
+  "id": "eramdam.desktop-touch-mode",
+  "name": "Desktop touch controls",
+  "author": ["Eramdam"],
+  "description": "A description of your mod.",
+  "prefix": "eramdam.dtm",
+  "main_file": "main.lua",
+  "priority": -20,
+  "badge_colour": "666665",
+  "badge_text_colour": "FFFFFF",
+  "display_name": "YM",
+  "version": "1.0.0",
+  "dependencies": ["Steamodded (>=1.*)", "Lovely (>=0.6)"]
+}

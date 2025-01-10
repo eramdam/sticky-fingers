@@ -1,0 +1,40 @@
+[manifest]
+version = "1.0.0"
+
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''
+--The object being dragged
+if self.dragging.target then
+'''
+position = "after"
+payload = '''
+create_drag_target_from_card(self.dragging.target)
+'''
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.copy]
+target = "functions/misc_functions.lua"
+position = "append"
+sources = [
+  "overrides/misc_functions.lua"
+]
+
+[[patches]]
+[patches.copy]
+target = "functions/button_callbacks.lua"
+position = "append"
+sources = [
+  "overrides/button_callbacks.lua"
+]
+
+[[patches]]
+[patches.copy]
+target = "functions/UI_definitions.lua"
+position = "append"
+sources = [
+  "overrides/UI_definitions.lua"
+]
