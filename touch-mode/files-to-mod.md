@@ -1,0 +1,19 @@
+- card.lua maybe
+- engine/controller.lua
+- engine/node.lua
+- engine/ui.lua
+  - pulse_border
+  - UIElement:release
+- functions/button_callbacks.lua
+  - G.FUNCS.check_drag_target_active
+  - G.FUNCS.buy_button_check
+  - G.FUNCS.can_buy
+  - G.FUNCS.buy_and_use_button_check
+  - G.FUNCS.can_buy_and_use
+  - G.FUNCS.select_button_check
+  - G.FUNCS.can_select_card
+- functions/UI_definitions.lua
+  - `create_shop_card_ui` line 872 (can_buy -> buy_button_check)
+  - `create_shop_card_ui` line 876 (can_buy_and_use -> buy_and_use_button_check)
+  - drag_target()
+  - create_UIBox_blind_tag() line 1585 (hover = true, func = hover_tag_proxy...)
