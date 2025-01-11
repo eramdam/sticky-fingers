@@ -1,8 +1,29 @@
-- card.lua maybe
+- card.lua (maybe)
+  - ? function Card:can_use_consumeable
+  - ? Card:single_tap
+  - ? Card:can_long_press
+  - ? Card:can_hover_on_drag
+  - ? Card:swipe_up
+  - ? Card:swipe_down
 - engine/controller.lua
+  - self.touch_control (probably not)
+  - Controller:set_HID_flags touch? (probably not)
+  - self.finger_cursor = self.cursor_hover.target maybe?
+  - line 348/349
+  - line 363 ("stop dragging")
+  - line 396 "non touch" block? maybe?
+  - line 401 clicked.time
+  - line 405 local releasable block
+  - line 454 elseif... (remove `not self.is_cursor_down`) maybe?
+  - line 596 `if self.is_cursor_down` until line 612
+  - L_cursor_release, line 1259, add `or self.dragging.target`
 - engine/node.lua
+  - simple_touch?
+  - can_long_press probably
+  - can_hover_on_drag most likely
 - engine/ui.lua
-  - pulse_border
+  - line 756 add `G.CONTROLLER.is_cursor_down`?
+  - line 818 pulse_border
   - UIElement:release
 - functions/button_callbacks.lua
   - G.FUNCS.check_drag_target_active
@@ -13,7 +34,14 @@
   - G.FUNCS.select_button_check
   - G.FUNCS.can_select_card
 - functions/UI_definitions.lua
-  - `create_shop_card_ui` line 872 (can_buy -> buy_button_check)
-  - `create_shop_card_ui` line 876 (can_buy_and_use -> buy_and_use_button_check)
-  - drag_target()
-  - create_UIBox_blind_tag() line 1585 (hover = true, func = hover_tag_proxy...)
+  - line 309 can_select_card -> select_button_check
+  - line 367 (can_buy_and_use -> buy_and_use_button_check)
+  - line 398 (can_select_card -> select_button_check)
+  - line 373 (can_buy -> buy_button_check)
+  - line 872 (can_buy -> buy_button_check)
+  - line 876 (can_buy_and_use -> buy_and_use_button_check)
+  - drag_target() method
+  - line 1585 create_UIBox_blind_tag() (hover = true, func = hover_tag_proxy...) ?
+  - line 4111 temp_blind.touch_collide_tilt = true
+  - line 5708 temp_blind.touch_collide_tilt = true
+
