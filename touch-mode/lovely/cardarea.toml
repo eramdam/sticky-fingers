@@ -19,3 +19,257 @@ end
 '''
 match_indent = false
 times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''
+function Card:can_use_consumeable(any_state, skip_check)
+'''
+position = "after"
+payload = '''
+if not self.ability.consumeable then return false end
+'''
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''
+function Card:can_use_consumeable(any_state, skip_check)
+'''
+position = "before"
+payload = '''
+function Card:simple_touch()
+  return false
+end
+
+function Card:single_tap()
+  if self.area and self.area:can_highlight(self) and self.area == G.hand then
+      if (self.area == G.hand) and (G.STATE == G.STATES.HAND_PLAYED) then return end
+      if self.highlighted ~= true then 
+          self.area:add_to_highlighted(self)
+      else
+          self.area:remove_from_highlighted(self)
+          play_sound('cardSlide2', nil, 0.3)
+      end
+  end
+  if self.area and self.area == G.deck and self.area.cards[1] == self then 
+      G.FUNCS.deck_info()
+  end
+  G.MOBILE_VIBRATION_QUEUE = math.max(G.MOBILE_VIBRATION_QUEUE or 0, 1)
+end
+
+function Card:can_long_press()
+  if self.area and ((self.area == G.hand) or
+  ( self.area == G.deck and self.area.cards[1] == self)) then
+      return true
+  end
+end
+
+function Card:can_hover_on_drag()
+  return false
+end
+
+function Card:swipe_up()
+  G.MOBILE_VIBRATION_QUEUE = math.max(G.MOBILE_VIBRATION_QUEUE or 0, 2)
+  if self.area and self.area == G.hand and self.area:can_highlight(self) then
+      if (self.area == G.hand) and (G.STATE == G.STATES.HAND_PLAYED) then return end
+      if self.highlighted ~= true then 
+          self.area:add_to_highlighted(self)
+      end
+  end
+  if not self.ability.consumeable and self.area and self.area == G.pack_cards and G.FUNCS.can_select_card(self) then
+      G.FUNCS.use_card({config={ref_table = self}})
+      return
+  end
+  if self.area and ((self.area == G.shop_jokers) or (self.area == G.shop_booster) or (self.area == G.shop_vouchers)) then
+      if self.ability.set == 'Booster' and ((self.cost) <= 0 or (self.cost <= G.GAME.dollars - G.GAME.bankrupt_at)) then
+          G.FUNCS.use_card({config={ref_table = self}})
+          return
+      elseif self.ability.set == 'Voucher' and ((self.cost) <= 0 or (self.cost <= G.GAME.dollars - G.GAME.bankrupt_at)) then   
+          G.FUNCS.use_card({config={ref_table = self}})
+          return
+      elseif self.area == G.shop_jokers and G.FUNCS.can_buy(self) then 
+          G.FUNCS.buy_from_shop({config = {
+              ref_table = self,
+              id = 'buy'
+          }})
+          return
+      end
+  end
+  if self.ability.consumeable and self.area and (self.area == G.consumeables or self.area == G.pack_cards) and self:can_use_consumeable() then 
+      G.FUNCS.use_card({config={ref_table = self}})
+  end
+end
+
+function Card:swipe_down()
+  G.MOBILE_VIBRATION_QUEUE = math.max(G.MOBILE_VIBRATION_QUEUE or 0, 3)
+  if self.area and self.area:can_highlight(self) then
+      if (self.area == G.hand) and (G.STATE == G.STATES.HAND_PLAYED) then return end
+      if self.highlighted == true then 
+          self.area:remove_from_highlighted(self)
+          play_sound('cardSlide2', nil, 0.3)
+      end
+  end
+  if G.FUNCS.can_buy_and_use(self) then 
+      G.FUNCS.buy_from_shop({config = {
+          ref_table = self,
+          id = 'buy_and_use'
+      }})
+      return
+  end
+  if self.area and (self.area == G.jokers or self.area == G.consumeables) then
+      self:sell_card()
+  end
+end
+'''
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''
+self.collision_list = {} --A list of all node that the cursor currently collides with
+'''
+position = "after"
+payload = '''
+--Touch controller
+self.touch_control = {s_tap = {target = nil,handled = true}, l_press = {target = nil, handled = true}}
+'''
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''
+if not self.cursor_down.handled then
+'''
+position = "after"
+payload = '''
+self.cursor_down.distance = 0
+self.cursor_down.duration = 0
+'''
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''
+--The object being dragged
+'''
+position = "before"
+payload = '''
+--The object being dragged
+if not self.dragging.handled and self.cursor_down.duration and (self.cursor_down.duration  > 0.1) then
+    create_drag_target_from_card(self.dragging.target)
+    self.dragging.handled = true
+end
+'''
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''
+if self.hovering.target and self.hovering.target == self.dragging.target and not self.HID.touch then
+    self.hovering.target:stop_hover()
+end
+'''
+position = "after"
+payload = '''
+
+    if self.is_cursor_down then 
+        self.cursor_down.distance = math.max(Vector_Dist(self.cursor_down.T, self.cursor_hover.T), self.cursor_down.distance or 0)
+        self.cursor_down.duration = G.TIMERS.UPTIME - self.cursor_down.uptime
+        if self.cursor_up.target then
+            self.cursor_up.target = nil
+        end
+    end
+    if not self.is_cursor_down then
+        if self.cursor_down.target then
+            self.cursor_down.target = nil
+            self.cursor_down.distance = nil
+            self.cursor_down.duration = nil
+        end
+    end
+'''
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''
+self.cursor_hover.time = G.TIMERS.TOTAL
+'''
+position = "after"
+payload = '''
+self.cursor_hover.uptime = G.TIMERS.UPTIME
+'''
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''
+self.cursor_down.time = G.TIMERS.TOTAL
+'''
+position = "after"
+payload = '''
+self.cursor_down.uptime = G.TIMERS.UPTIME
+'''
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''
+self.cursor_up.time = G.TIMERS.TOTAL
+'''
+position = "after"
+payload = '''
+self.cursor_up.uptime = G.TIMERS.UPTIME
+'''
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = "engine/controller.lua"
+pattern = '''
+        end
+        self.cursor_up.handled = true
+'''
+position = "before"
+payload = '''
+            if self.cursor_down.distance < G.MIN_CLICK_DIST and self.cursor_down.duration < 0.2 then 
+                if self.cursor_down.target.states.click.can and not self.touch_control.l_press.target then
+                    self.touch_control.s_tap.target = self.cursor_down.target
+                    self.touch_control.s_tap.time = self.cursor_up.time - self.cursor_down.time
+                    self.touch_control.s_tap.handled = false
+                end
+            --if not, was the Cursor dragging some other thing?
+            elseif self.dragging.prev_target then 
+                local releasable = nil
+                for _, v in ipairs(self.collision_list) do
+                    if v.states.hover.can and (not v.states.drag.is) and (v ~= self.dragging.prev_target) then
+                        releasable = v
+                        break 
+                    end
+                end
+                if releasable and releasable.states.release_on.can then 
+                    self.released_on.target = releasable
+                    self.released_on.handled = false
+                end
+            end
+'''
+match_indent = false
+times = 1
