@@ -1,0 +1,15 @@
+[manifest]
+priority = 0
+version = "1.0.0"
+
+[[patches]]
+[patches.pattern]
+match_indent = true
+pattern = "function love.mousepressed(x, y, button, touch)"
+payload = '''
+sendDebugMessage("button ".. button, "TOUCH DEBUGGER")
+sendDebugMessage("touch " .. tostring(touch), "TOUCH DEBUGGER")
+'''
+position = "after"
+target = "main.lua"
+times = 1
