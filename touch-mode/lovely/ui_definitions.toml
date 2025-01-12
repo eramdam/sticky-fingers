@@ -1,58 +1,57 @@
 [manifest]
-version = "1.0.0"
 priority = 0
-
+version = "1.0.0"
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = false
 pattern = '''{n=G.UIT.R, config={ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5*card.T.w - 0.15, maxw = 0.9*card.T.w - 0.15, minh = 0.3*card.T.h, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_select_card'}, nodes={'''
-position = "at"
 payload = '''{n=G.UIT.R, config={ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5*card.T.w - 0.15, maxw = 0.9*card.T.w - 0.15, minh = 0.3*card.T.h, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'select_button_check'}, nodes={'''
-match_indent = false
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = false
 pattern = '''func = 'can_buy_and_use', button = 'buy_from_shop', card_width = card_width'''
-position = "at"
 payload = '''func = 'buy_and_use_button_check', button = 'buy_from_shop', card_width = card_width'''
-match_indent = false
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = false
 pattern = '''func = 'can_buy', button = 'buy_from_shop', card_width = card_width, buy_and_use = buy_and_use'''
-position = "at"
 payload = '''func = 'buy_button_check', button = 'buy_from_shop', card_width = card_width, buy_and_use = buy_and_use'''
-match_indent = false
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = false
 pattern = '''func = 'can_select_card', button = 'use_card', card_width = card_width'''
-position = "at"
 payload = '''func = 'select_button_check', button = 'use_card', card_width = card_width'''
-match_indent = false
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = false
 pattern = '''n=G.UIT.ROOT, config = {ref_table = card, minw = 1.1, maxw = 1.3, padding = 0.1, align = 'bm', colour = G.C.GOLD, shadow = true, r = 0.08, minh = 0.94, func = 'can_buy', one_press = true, button = 'buy_from_shop', hover = true}, nodes={'''
-position = "at"
 payload = '''n=G.UIT.ROOT, config = {ref_table = card, minw = 1.1, maxw = 1.3, padding = 0.1, align = 'bm', colour = G.C.GOLD, shadow = true, r = 0.08, minh = 0.94, func = 'buy_button_check', one_press = true, button = 'buy_from_shop', hover = true}, nodes={'''
-match_indent = false
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
-pattern = '''n=G.UIT.ROOT, config = {id = 'buy_and_use', ref_table = card, minh = 1.1, padding = 0.1, align = 'cr', colour = G.C.RED, shadow = true, r = 0.08, minw = 1.1, func = 'can_buy_and_use', one_press = true, button = 'buy_from_shop', hover = true, focus_args = {type = 'none'}}, nodes={'''
-position = "at"
-payload = '''n=G.UIT.ROOT, config = {id = 'buy_and_use', ref_table = card, minh = 1.1, padding = 0.1, align = 'cr', colour = G.C.RED, shadow = true, r = 0.08, minw = 1.1, func = 'buy_and_use_button_check', one_press = true, button = 'buy_from_shop', hover = true, focus_args = {type = 'none'}}, nodes={'''
 match_indent = false
+pattern = '''n=G.UIT.ROOT, config = {id = 'buy_and_use', ref_table = card, minh = 1.1, padding = 0.1, align = 'cr', colour = G.C.RED, shadow = true, r = 0.08, minw = 1.1, func = 'can_buy_and_use', one_press = true, button = 'buy_from_shop', hover = true, focus_args = {type = 'none'}}, nodes={'''
+payload = '''n=G.UIT.ROOT, config = {id = 'buy_and_use', ref_table = card, minh = 1.1, padding = 0.1, align = 'cr', colour = G.C.RED, shadow = true, r = 0.08, minw = 1.1, func = 'buy_and_use_button_check', one_press = true, button = 'buy_from_shop', hover = true, focus_args = {type = 'none'}}, nodes={'''
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1

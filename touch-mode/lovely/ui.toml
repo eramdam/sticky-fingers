@@ -1,30 +1,28 @@
 [manifest]
-version = "1.0.0"
 priority = 0
-
+version = "1.0.0"
 
 [[patches]]
 [patches.pattern]
-target = "engine/ui.lua"
+match_indent = false
 pattern = '''
 function UIElement:release(other)
 '''
-position = "after"
 payload = '''
     if self.config.release_func then 
         self.config.release_func(other)
     end
 '''
-match_indent = false
+position = "after"
+target = "engine/ui.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/ui.lua"
+match_indent = false
 pattern = '''
 --Draw the outline of the object
 '''
-position = "before"
 payload = '''
     if self.config.pulse_border then
         self.border_pulse_timer = self.border_pulse_timer or G.TIMERS.REAL
@@ -40,18 +38,19 @@ payload = '''
     end
     
 '''
-match_indent = false
+position = "before"
+target = "engine/ui.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/ui.lua"
+match_indent = false
 pattern = '''
 self.ARGS.button_colours[2] = (((collided_button.config.hover and collided_button.states.hover.is) or (collided_button.last_clicked and collided_button.last_clicked > G.TIMERS.REAL - 0.1)) and G.C.UI.HOVER or nil)
 '''
-position = "at"
 payload = '''
 self.ARGS.button_colours[2] = (((collided_button.config.hover and collided_button.states.hover.is and ((not G.CONTROLLER.HID.touch) or G.CONTROLLER.is_cursor_down)) or (collided_button.last_clicked and collided_button.last_clicked > G.TIMERS.REAL - 0.1)) and G.C.UI.HOVER or nil)
 '''
-match_indent = false
+position = "at"
+target = "engine/ui.lua"
 times = 1

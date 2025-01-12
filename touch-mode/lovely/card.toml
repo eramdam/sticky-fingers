@@ -1,0 +1,16 @@
+[manifest]
+priority = 0
+version = "1.0.0"
+
+[[patches]]
+[patches.pattern]
+match_indent = false
+pattern = '''
+function Card:can_use_consumeable(any_state, skip_check)
+'''
+payload = '''
+if not self.ability.consumeable then return false end
+'''
+position = "after"
+target = "card.lua"
+times = 1
