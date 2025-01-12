@@ -1,0 +1,21 @@
+[manifest]
+version = "1.0.0"
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "cardarea.lua"
+pattern = '''
+elseif self.config.type == 'play' or self.config.type == 'shop' or self.config.type == 'consumeable' then 
+    card.states.drag.can = false
+'''
+position = "after"
+payload = '''
+if (self.config.type == 'shop') or (self.config.type == 'consumeable') then 
+    card.states.drag.can = true
+else
+    card.states.drag.can = false
+end
+'''
+match_indent = false
+times = 1
