@@ -6,7 +6,7 @@ version = "1.0.0"
 [patches.copy]
 position = "append"
 sources = [
-  "lovely/ui_definitions.lua",
+  "lovely/appends/ui_definitions.lua",
 ]
 target = "functions/UI_definitions.lua"
 
@@ -14,7 +14,7 @@ target = "functions/UI_definitions.lua"
 [patches.copy]
 position = "append"
 sources = [
-  "lovely/button_callbacks.lua",
+  "lovely/appends/button_callbacks.lua",
 ]
 target = "functions/button_callbacks.lua"
 
@@ -22,7 +22,7 @@ target = "functions/button_callbacks.lua"
 [patches.copy]
 position = "append"
 sources = [
-  "lovely/card.lua",
+  "lovely/appends/card.lua",
 ]
 target = "card.lua"
 
@@ -30,7 +30,7 @@ target = "card.lua"
 [patches.copy]
 position = "append"
 sources = [
-  "lovely/misc_functions.lua",
+  "lovely/appends/misc_functions.lua",
 ]
 target = "functions/misc_functions.lua"
 
@@ -38,6 +38,6 @@ target = "functions/misc_functions.lua"
 [patches.copy]
 position = "append"
 sources = [
-  "lovely/node.lua",
+  "lovely/appends/node.lua",
 ]
 target = "engine/node.lua"

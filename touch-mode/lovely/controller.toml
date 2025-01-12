@@ -20,19 +20,6 @@ times = 1
 [patches.pattern]
 match_indent = false
 pattern = '''
-self.HID.touch = HID_type == 'touch'
-'''
-payload = '''
-self.HID.touch = TM.config.fake_touch or HID_type == 'touch'
-'''
-position = "at"
-target = "engine/controller.lua"
-times = 1
-
-[[patches]]
-[patches.pattern]
-match_indent = false
-pattern = '''
 if not self.cursor_down.handled then
 '''
 payload = '''
@@ -160,3 +147,17 @@ payload = '''
 position = "before"
 target = "engine/controller.lua"
 times = 1
+
+# disable this to (maybe?) force touch mode for debugging
+# [[patches]]
+# [patches.pattern]
+# match_indent = false
+# pattern = '''
+# self.HID.touch = HID_type == 'touch'
+# '''
+# payload = '''
+# self.HID.touch = TM.config.fake_touch or HID_type == 'touch'
+# '''
+# position = "at"
+# target = "engine/controller.lua"
+# times = 1
