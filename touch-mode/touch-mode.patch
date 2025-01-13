@@ -1,0 +1,712 @@
+diff --git a/card.lua b/card.lua
+index 2c95344..31b80a5 100644
+--- a/card.lua
++++ b/card.lua
+@@ -1521,6 +1521,7 @@ function Card:use_consumeable(area, copier)
+ end
+ 
+ function Card:can_use_consumeable(any_state, skip_check)
++    if not self.ability.consumeable then return false end
+     if not skip_check and ((G.play and #G.play.cards > 0) or
+         (G.CONTROLLER.locked) or
+         (G.GAME.STOP_USE and G.GAME.STOP_USE > 0))
+@@ -4330,6 +4331,10 @@ function Card:stop_hover()
+     Node.stop_hover(self)
+ end
+ 
++function Card:simple_touch()
++    return false
++end
++
+ function Card:juice_up(scale, rot_amount)
+     --G.VIBRATION = G.VIBRATION + 0.4
+     local rot_amt = rot_amount and 0.4*(math.random()>0.5 and 1 or -1)*rot_amount or (math.random()>0.5 and 1 or -1)*0.16
+@@ -4622,6 +4627,86 @@ function Card:click()
+     end
+ end
+ 
++function Card:single_tap()
++    if self.area and self.area:can_highlight(self) and self.area == G.hand then
++        if (self.area == G.hand) and (G.STATE == G.STATES.HAND_PLAYED) then return end
++        if self.highlighted ~= true then 
++            self.area:add_to_highlighted(self)
++        else
++            self.area:remove_from_highlighted(self)
++            play_sound('cardSlide2', nil, 0.3)
++        end
++    end
++    if self.area and self.area == G.deck and self.area.cards[1] == self then 
++        G.FUNCS.deck_info()
++    end
++    G.MOBILE_VIBRATION_QUEUE = math.max(G.MOBILE_VIBRATION_QUEUE or 0, 1)
++end
++
++function Card:can_long_press()
++    if self.area and ((self.area == G.hand) or
++    ( self.area == G.deck and self.area.cards[1] == self)) then
++        return true
++    end
++end
++
++function Card:can_hover_on_drag()
++    return false
++end
++
++function Card:swipe_up()
++    G.MOBILE_VIBRATION_QUEUE = math.max(G.MOBILE_VIBRATION_QUEUE or 0, 2)
++    if self.area and self.area == G.hand and self.area:can_highlight(self) then
++        if (self.area == G.hand) and (G.STATE == G.STATES.HAND_PLAYED) then return end
++        if self.highlighted ~= true then 
++            self.area:add_to_highlighted(self)
++        end
++    end
++    if not self.ability.consumeable and self.area and self.area == G.pack_cards and G.FUNCS.can_select_card(self) then
++        G.FUNCS.use_card({config={ref_table = self}})
++        return
++    end
++    if self.area and ((self.area == G.shop_jokers) or (self.area == G.shop_booster) or (self.area == G.shop_vouchers)) then
++        if self.ability.set == 'Booster' and ((self.cost) <= 0 or (self.cost <= G.GAME.dollars - G.GAME.bankrupt_at)) then
++            G.FUNCS.use_card({config={ref_table = self}})
++            return
++        elseif self.ability.set == 'Voucher' and ((self.cost) <= 0 or (self.cost <= G.GAME.dollars - G.GAME.bankrupt_at)) then   
++            G.FUNCS.use_card({config={ref_table = self}})
++            return
++        elseif self.area == G.shop_jokers and G.FUNCS.can_buy(self) then 
++            G.FUNCS.buy_from_shop({config = {
++                ref_table = self,
++                id = 'buy'
++            }})
++            return
++        end
++    end
++    if self.ability.consumeable and self.area and (self.area == G.consumeables or self.area == G.pack_cards) and self:can_use_consumeable() then 
++        G.FUNCS.use_card({config={ref_table = self}})
++    end
++end
++
++function Card:swipe_down()
++    G.MOBILE_VIBRATION_QUEUE = math.max(G.MOBILE_VIBRATION_QUEUE or 0, 3)
++    if self.area and self.area:can_highlight(self) then
++        if (self.area == G.hand) and (G.STATE == G.STATES.HAND_PLAYED) then return end
++        if self.highlighted == true then 
++            self.area:remove_from_highlighted(self)
++            play_sound('cardSlide2', nil, 0.3)
++        end
++    end
++    if G.FUNCS.can_buy_and_use(self) then 
++        G.FUNCS.buy_from_shop({config = {
++            ref_table = self,
++            id = 'buy_and_use'
++        }})
++        return
++    end
++    if self.area and (self.area == G.jokers or self.area == G.consumeables) then
++        self:sell_card()
++    end
++end
++
+ function Card:save()
+     cardTable = {
+         sort_id = self.sort_id,
+diff --git a/cardarea.lua b/cardarea.lua
+index 6507fe0..c5e5655 100644
+--- a/cardarea.lua
++++ b/cardarea.lua
+@@ -219,7 +219,11 @@ function CardArea:set_ranks()
+             card.states.drag.can = false 
+             card.states.collide.can = false 
+         elseif self.config.type == 'play' or self.config.type == 'shop' or self.config.type == 'consumeable' then 
+-            card.states.drag.can = false
++            if (self.config.type == 'shop') or (self.config.type == 'consumeable') then 
++                card.states.drag.can = true
++            else
++                card.states.drag.can = false
++            end
+         else
+             card.states.drag.can = true
+         end
+diff --git a/engine/controller.lua b/engine/controller.lua
+index 2b4cbcb..03c0750 100644
+--- a/engine/controller.lua
++++ b/engine/controller.lua
+@@ -11,6 +11,9 @@ self.dragging = {target = nil, handled = true, prev_target = nil} --The node bei
+ self.hovering = {target = nil, handled = true, prev_target = nil} --The node being hovered this frame
+ self.released_on = {target = nil, handled = true, prev_target = nil} --The node that the cursor 'Released' on, like letting go of LMB
+ 
++--Touch controller
++self.touch_control = {s_tap = {target = nil,handled = true}, l_press = {target = nil, handled = true}}
++
+ self.collision_list = {} --A list of all node that the cursor currently collides with
+ 
+ --Input values to be determined by this controller - the actual game objects should not have to see any of this
+@@ -319,6 +322,8 @@ function Controller:update(dt)
+ 
+     --Cursor is currently down
+     if not self.cursor_down.handled then 
++        self.cursor_down.distance = 0
++        self.cursor_down.duration = 0
+         if self.cursor_down.target.states.drag.can then
+             self.cursor_down.target.states.drag.is = true
+             self.cursor_down.target:set_offset(self.cursor_down.T, 'Click')
+@@ -350,6 +355,27 @@ function Controller:update(dt)
+                     self.released_on.handled = false
+                 end
+             end
++
++            if self.cursor_down.distance < G.MIN_CLICK_DIST and self.cursor_down.duration < 0.2 then 
++                if self.cursor_down.target.states.click.can and not self.touch_control.l_press.target then
++                    self.touch_control.s_tap.target = self.cursor_down.target
++                    self.touch_control.s_tap.time = self.cursor_up.time - self.cursor_down.time
++                    self.touch_control.s_tap.handled = false
++                end
++            --if not, was the Cursor dragging some other thing?
++            elseif self.dragging.prev_target then 
++                local releasable = nil
++                for _, v in ipairs(self.collision_list) do
++                    if v.states.hover.can and (not v.states.drag.is) and (v ~= self.dragging.prev_target) then
++                        releasable = v
++                        break 
++                    end
++                end
++                if releasable and releasable.states.release_on.can then 
++                    self.released_on.target = releasable
++                    self.released_on.handled = false
++                end
++            end
+         end
+         self.cursor_up.handled = true
+     end
+@@ -377,6 +403,11 @@ function Controller:update(dt)
+     --Process registry clicks
+     self:process_registry()
+ 
++    --The object being dragged
++    if not self.dragging.handled and self.cursor_down.duration and (self.cursor_down.duration  > 0.1) then
++        create_drag_target_from_card(self.dragging.target)
++        self.dragging.handled = true
++    end
+     --The object being dragged
+     if self.dragging.target then
+         self.dragging.target:drag()
+@@ -423,6 +454,21 @@ function Controller:update(dt)
+     if self.hovering.target and self.hovering.target == self.dragging.target and not self.HID.touch then
+         self.hovering.target:stop_hover()
+     end
++
++    if self.is_cursor_down then 
++        self.cursor_down.distance = math.max(Vector_Dist(self.cursor_down.T, self.cursor_hover.T), self.cursor_down.distance or 0)
++        self.cursor_down.duration = G.TIMERS.UPTIME - self.cursor_down.uptime
++        if self.cursor_up.target then
++            self.cursor_up.target = nil
++        end
++    end
++    if not self.is_cursor_down then
++        if self.cursor_down.target then
++            self.cursor_down.target = nil
++            self.cursor_down.distance = nil
++            self.cursor_down.duration = nil
++        end
++    end
+ end
+ 
+ --Brute force remove all registries that no longer have valid nodes
+@@ -985,6 +1031,7 @@ function Controller:set_cursor_hover()
+     self.cursor_hover.T = self.cursor_hover.T or {}
+     self.cursor_hover.T.x, self.cursor_hover.T.y =G.CURSOR.T.x, G.CURSOR.T.y
+     self.cursor_hover.time = G.TIMERS.TOTAL
++    self.cursor_hover.uptime = G.TIMERS.UPTIME
+ 
+     self.cursor_hover.prev_target = self.cursor_hover.target
+     self.cursor_hover.target = nil
+@@ -1042,6 +1089,7 @@ function Controller:L_cursor_press(x, y)
+ 
+     self.cursor_down.T = {x = x/(G.TILESCALE*G.TILESIZE), y = y/(G.TILESCALE*G.TILESIZE)}
+     self.cursor_down.time = G.TIMERS.TOTAL
++    self.cursor_down.uptime = G.TIMERS.UPTIME
+     self.cursor_down.handled = false
+     self.cursor_down.target = nil
+     self.is_cursor_down = true
+@@ -1065,6 +1113,7 @@ function Controller:L_cursor_release(x, y)
+ 
+     self.cursor_up.T = {x = x/(G.TILESCALE*G.TILESIZE), y = y/(G.TILESCALE*G.TILESIZE)}
+     self.cursor_up.time = G.TIMERS.TOTAL
++    self.cursor_up.uptime = G.TIMERS.UPTIME
+     self.cursor_up.handled = false
+     self.cursor_up.target = nil
+     self.is_cursor_down = false
+diff --git a/engine/node.lua b/engine/node.lua
+index d4a1b41..52bdd4a 100644
+--- a/engine/node.lua
++++ b/engine/node.lua
+@@ -286,6 +286,14 @@ function Node:stop_hover()
+     end
+ end
+ 
++--Determine touch behaviour
++function Node:simple_touch()
++    return true
++end
++
++function Node:can_long_press() return nil end
++function Node:can_hover_on_drag() return true end
++
+ --Called by the CONTROLLER to determine the position the cursor should be set to for this node
+ function Node:put_focused_cursor()
+     return (self.T.x + self.T.w/2 + self.container.T.x)*(G.TILESCALE*G.TILESIZE), (self.T.y + self.T.h/2 + self.container.T.y)*(G.TILESCALE*G.TILESIZE)
+diff --git a/engine/ui.lua b/engine/ui.lua
+index 9001108..fc14144 100644
+--- a/engine/ui.lua
++++ b/engine/ui.lua
+@@ -753,7 +753,7 @@ function UIElement:draw_self()
+             local collided_button = self.config.button_UIE or self
+             self.ARGS.button_colours = self.ARGS.button_colours or {}
+             self.ARGS.button_colours[1] = self.config.button_delay and mix_colours(self.config.colour, G.C.L_BLACK, 0.5) or self.config.colour
+-            self.ARGS.button_colours[2] = (((collided_button.config.hover and collided_button.states.hover.is) or (collided_button.last_clicked and collided_button.last_clicked > G.TIMERS.REAL - 0.1)) and G.C.UI.HOVER or nil)
++            self.ARGS.button_colours[2] = (((collided_button.config.hover and collided_button.states.hover.is and ((not G.CONTROLLER.HID.touch) or G.CONTROLLER.is_cursor_down)) or (collided_button.last_clicked and collided_button.last_clicked > G.TIMERS.REAL - 0.1)) and G.C.UI.HOVER or nil)
+             for k, v in ipairs(self.ARGS.button_colours) do
+                 love.graphics.setColor(v)
+                 if self.config.r and self.VT.w > 0.01 then 
+@@ -794,6 +794,19 @@ function UIElement:draw_self()
+             self.config.object:draw()
+         end
+     end
++
++    if self.config.pulse_border then
++        self.border_pulse_timer = self.border_pulse_timer or G.TIMERS.REAL
++        local lw = 2*math.max(0, 0.5*math.cos(6*(G.TIMERS.REAL - self.border_pulse_timer)) + 0.5)
++        prep_draw(self, 1)
++        love.graphics.scale((1)/(G.TILESIZE))
++        love.graphics.setLineWidth(lw + 1)
++        love.graphics.setColor(adjust_alpha(G.C.BLACK, 0.2*lw, true))
++        self:draw_pixellated_rect('fill', parallax_dist)
++        love.graphics.setColor(self.config.colour[4] > 0 and mix_colours(G.C.WHITE, self.config.colour, 0.8) or G.C.WHITE)
++        self:draw_pixellated_rect('line', parallax_dist)
++        love.graphics.pop()
++    end
+     
+     --Draw the outline of the object
+     if self.config.outline and self.config.outline_colour[4] > 0.01 then
+@@ -976,7 +989,7 @@ function UIElement:click()
+             G.FUNCS.tut_next()
+         end
+         G.FUNCS[self.config.button](self)
+-        
++        -- G.CONTROLLER.touch_control.only_hover = G.ROOM
+         G.NO_MOD_CURSOR_STACK = nil
+ 
+         if self.config.choice then
+@@ -1043,6 +1056,9 @@ function UIElement:stop_hover()
+ end
+ 
+ function UIElement:release(other)
++    if self.config.release_func then 
++        self.config.release_func(other)
++    end
+     if self.parent then self.parent:release(other) end
+ end
+ 
+diff --git a/functions/UI_definitions.lua b/functions/UI_definitions.lua
+index 3463f81..7746c45 100644
+--- a/functions/UI_definitions.lua
++++ b/functions/UI_definitions.lua
+@@ -277,7 +277,7 @@ function G.UIDEF.use_and_sell_buttons(card)
+   elseif card.area and card.area == G.pack_cards then
+     return {
+       n=G.UIT.ROOT, config = {padding = 0, colour = G.C.CLEAR}, nodes={
+-        {n=G.UIT.R, config={ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5*card.T.w - 0.15, maxw = 0.9*card.T.w - 0.15, minh = 0.3*card.T.h, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_select_card'}, nodes={
++        {n=G.UIT.R, config={ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5*card.T.w - 0.15, maxw = 0.9*card.T.w - 0.15, minh = 0.3*card.T.h, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'select_button_check'}, nodes={
+           {n=G.UIT.T, config={text = localize('b_select'),colour = G.C.UI.TEXT_LIGHT, scale = 0.45, shadow = true}}
+         }},
+     }}
+@@ -335,13 +335,13 @@ function G.UIDEF.card_focus_ui(card)
+     if card.ability.consumeable then 
+       base_attach.children.buy_and_use = G.UIDEF.card_focus_button{
+         card = card, parent = base_attach, type = 'buy_and_use',
+-        func = 'can_buy_and_use', button = 'buy_from_shop', card_width = card_width
++        func = 'buy_and_use_button_check', button = 'buy_from_shop', card_width = card_width
+       }
+       buy_and_use = true
+     end
+     base_attach.children.buy = G.UIDEF.card_focus_button{
+       card = card, parent = base_attach, type = 'buy',
+-      func = 'can_buy', button = 'buy_from_shop', card_width = card_width, buy_and_use = buy_and_use
++      func = 'buy_button_check', button = 'buy_from_shop', card_width = card_width, buy_and_use = buy_and_use
+     }
+   end
+   if card.area == G.shop_vouchers and G.shop_vouchers then --Add a redeem button
+@@ -366,7 +366,7 @@ function G.UIDEF.card_focus_ui(card)
+   if (card.area == G.pack_cards and G.pack_cards) and not card.ability.consumeable then --Add a use button
+     base_attach.children.use = G.UIDEF.card_focus_button{
+       card = card, parent = base_attach, type = 'select',
+-      func = 'can_select_card', button = 'use_card', card_width = card_width
++      func = 'select_button_check', button = 'use_card', card_width = card_width
+     }
+   end
+   if (card.area == G.jokers and G.jokers or card.area == G.consumeables and G.consumeables) and G.STATE ~= G.STATES.TUTORIAL then --Add a sell button
+@@ -820,11 +820,11 @@ end
+             n=G.UIT.ROOT, config = {ref_table = card, minw = 1.1, maxw = 1.3, padding = 0.1, align = 'bm', colour = G.C.GREEN, shadow = true, r = 0.08, minh = 0.94, func = 'can_open', one_press = true, button = 'open_booster', hover = true}, nodes={
+                 {n=G.UIT.T, config={text = localize('b_open'),colour = G.C.WHITE, scale = 0.5}}
+             }} or {
+-            n=G.UIT.ROOT, config = {ref_table = card, minw = 1.1, maxw = 1.3, padding = 0.1, align = 'bm', colour = G.C.GOLD, shadow = true, r = 0.08, minh = 0.94, func = 'can_buy', one_press = true, button = 'buy_from_shop', hover = true}, nodes={
++            n=G.UIT.ROOT, config = {ref_table = card, minw = 1.1, maxw = 1.3, padding = 0.1, align = 'bm', colour = G.C.GOLD, shadow = true, r = 0.08, minh = 0.94, func = 'buy_button_check', one_press = true, button = 'buy_from_shop', hover = true}, nodes={
+                 {n=G.UIT.T, config={text = localize('b_buy'),colour = G.C.WHITE, scale = 0.5}}
+             }}
+           local t3 = {
+-            n=G.UIT.ROOT, config = {id = 'buy_and_use', ref_table = card, minh = 1.1, padding = 0.1, align = 'cr', colour = G.C.RED, shadow = true, r = 0.08, minw = 1.1, func = 'can_buy_and_use', one_press = true, button = 'buy_from_shop', hover = true, focus_args = {type = 'none'}}, nodes={
++            n=G.UIT.ROOT, config = {id = 'buy_and_use', ref_table = card, minh = 1.1, padding = 0.1, align = 'cr', colour = G.C.RED, shadow = true, r = 0.08, minw = 1.1, func = 'buy_and_use_button_check', one_press = true, button = 'buy_from_shop', hover = true, focus_args = {type = 'none'}}, nodes={
+               {n=G.UIT.B, config = {w=0.1,h=0.6}},
+               {n=G.UIT.C, config = {align = 'cm'}, nodes={
+                 {n=G.UIT.R, config = {align = 'cm', maxw = 1}, nodes={
+@@ -879,6 +879,61 @@ end
+       }))
+   end
+ 
++  function drag_target(args)
++    args = args or {}
++    args.text = args.text or {'BUY'}
++    args.colour = copy_table(args.colour or G.C.UI.TRANSPARENT_DARK)
++    args.cover = args.cover or nil
++    args.emboss = args.emboss or nil
++    args.active_check = args.active_check or (function(other) return true end)
++    args.release_func = args.release_func or (function(other) G.DEBUG_VALUE = 'WORKIN' end)
++    args.text_colour = copy_table(G.C.WHITE)
++    args.uibox_config = {
++      align = args.align or 'tli',
++      offset = args.offset or {x=0,y=0}, 
++      major = args.cover or args.major or nil,
++    }
++
++    local drag_area_width =(args.T and args.T.w or args.cover and args.cover.T.w or 0.001) + (args.cover_padding or 0)
++
++    local text_rows = {}
++    for k, v in ipairs(args.text) do
++      text_rows[#text_rows+1] = {n=G.UIT.R, config={align = "cm", padding = 0.05, maxw = drag_area_width-0.1}, nodes={{n=G.UIT.O, config={object = DynaText({scale = args.scale, string = v, maxw = args.maxw or (drag_area_width-0.1), colours = {args.text_colour},float = true, shadow = true, silent = not args.noisy, 0.7, pop_in = 0, pop_in_rate = 6, rotate = args.rotate or nil})}}}}
++    end
++
++    args.DT = UIBox{
++      T = {0,0,0,0},
++      definition = 
++        {n=G.UIT.ROOT, config = {align = 'cm',  args = args, can_collide = true, hover = true, release_func = args.release_func, func = 'check_drag_target_active', minw = drag_area_width, minh = (args.cover and args.cover.T.h or 0.001) + (args.cover_padding or 0), padding = 0.03, r = 0.1, emboss = args.emboss, colour = G.C.CLEAR}, nodes=text_rows}, 
++      config = args.uibox_config
++    }
++    args.DT.attention_text = true
++
++    if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.highlights then 
++      G.OVERLAY_TUTORIAL.highlights[#G.OVERLAY_TUTORIAL.highlights+1] = args.DT
++    end
++
++    G.E_MANAGER:add_event(Event({
++      trigger = 'after',
++      delay = 0,
++      blockable = false,
++      blocking = false,
++      func = function()
++        if not G.CONTROLLER.dragging.target and args.DT then 
++          if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.highlights then
++            for k, v in ipairs(G.OVERLAY_TUTORIAL.highlights) do
++              if args.DT == v then 
++                table.remove(G.OVERLAY_TUTORIAL.highlights, k)
++                break
++              end
++            end
++          end
++          args.DT:remove()
++          return true
++        end
++      end
++      }))
++  end
+ 
+   function attention_text(args)
+     args = args or {}
+@@ -3996,6 +4051,7 @@ function create_UIBox_your_collection_blinds(exit)
+     temp_blind.states.hover.can = true
+     temp_blind.states.drag.can = false
+     temp_blind.states.collide.can = true
++    -- temp_blind.touch_collide_tilt = true
+     temp_blind.config = {blind = v, force_focus = true}
+     if discovered and not v.alerted then 
+       blinds_to_be_alerted[#blinds_to_be_alerted+1] = temp_blind
+@@ -5561,6 +5617,7 @@ function G.UIDEF.challenge_description_tab(args)
+           temp_blind.states.hover.can = true
+           temp_blind.states.drag.can = false
+           temp_blind.states.collide.can = true
++          -- temp_blind.touch_collide_tilt = true
+           temp_blind.config = {blind = v, force_focus = true}
+           temp_blind.hover = function()
+             if not G.CONTROLLER.dragging.target or G.CONTROLLER.using_touch then 
+diff --git a/functions/button_callbacks.lua b/functions/button_callbacks.lua
+index 6665746..041ccee 100644
+--- a/functions/button_callbacks.lua
++++ b/functions/button_callbacks.lua
+@@ -47,26 +47,52 @@ G.FUNCS.sort_hand_value = function(e)
+     play_sound('paper1')
+ end
+ 
++G.FUNCS.check_drag_target_active = function(e)
++  if e.config.args.active_check(e.config.args.card) then
++    if (not e.config.pulse_border) or not e.config.args.init then
++      e.config.pulse_border = true
++      e.config.colour = e.config.args.colour
++      e.config.args.text_colour[4] = 1
++      e.config.release_func = e.config.args.release_func
++    end
++  else
++    if (e.config.pulse_border) or not e.config.args.init  then 
++      e.config.pulse_border = nil
++      e.config.colour = adjust_alpha(G.C.L_BLACK, 0.9)
++      e.config.args.text_colour[4] = 0.5
++      e.config.release_func = nil
++    end
++  end
++  e.config.args.init = true
++end
++
+ --Checks if the cost of a non voucher card is greater than what the player can afford and changes the 
+ --buy button visuals accordingly
+ --
+ ---@param e {}
+ --**e** Is the UIE that called this function
+-G.FUNCS.can_buy = function(e)
+-    if (e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (e.config.ref_table.cost > 0) then
+-        e.config.colour = G.C.UI.BACKGROUND_INACTIVE
+-        e.config.button = nil
++G.FUNCS.buy_button_check = function(e)
++  if not G.FUNCS.can_buy(e.config.ref_table) then
++      e.config.colour = G.C.UI.BACKGROUND_INACTIVE
++      e.config.button = nil
++  else
++      e.config.colour = G.C.ORANGE
++      e.config.button = 'buy_from_shop'
++  end
++  if e.config.ref_parent and e.config.ref_parent.children.buy_and_use then
++    if e.config.ref_parent.children.buy_and_use.states.visible then
++      e.UIBox.alignment.offset.y = -0.6
+     else
+-        e.config.colour = G.C.ORANGE
+-        e.config.button = 'buy_from_shop'
+-    end
+-    if e.config.ref_parent and e.config.ref_parent.children.buy_and_use then
+-      if e.config.ref_parent.children.buy_and_use.states.visible then
+-        e.UIBox.alignment.offset.y = -0.6
+-      else
+-        e.UIBox.alignment.offset.y = 0
+-      end
++      e.UIBox.alignment.offset.y = 0
+     end
++  end
++end
++
++G.FUNCS.can_buy = function(_card)
++if _card.cost > (G.GAME.dollars - G.GAME.bankrupt_at) and (_card.cost > 0) then
++  return false
++end
++return true
+ end
+ 
+ --Checks if the cost of a non voucher card is greater than what the player can afford and changes the 
+@@ -74,18 +100,25 @@ end
+ --
+ ---@param e {}
+ --**e** Is the UIE that called this function
+-G.FUNCS.can_buy_and_use = function(e)
+-    if (((e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (e.config.ref_table.cost > 0)) or (not e.config.ref_table:can_use_consumeable())) then
+-        e.UIBox.states.visible = false
+-        e.config.colour = G.C.UI.BACKGROUND_INACTIVE
+-        e.config.button = nil
+-    else
+-        if e.config.ref_table.highlighted then
+-          e.UIBox.states.visible = true
+-        end
+-        e.config.colour = G.C.SECONDARY_SET.Voucher
+-        e.config.button = 'buy_from_shop'
+-    end
++G.FUNCS.buy_and_use_button_check = function(e)
++  if not G.FUNCS.can_buy_and_use(e.config.ref_table) then
++      e.UIBox.states.visible = false
++      e.config.colour = G.C.UI.BACKGROUND_INACTIVE
++      e.config.button = nil
++  else
++      if e.config.ref_table.highlighted then
++        e.UIBox.states.visible = true
++      end
++      e.config.colour = G.C.SECONDARY_SET.Voucher
++      e.config.button = 'buy_from_shop'
++  end
++end
++
++G.FUNCS.can_buy_and_use = function(_card)
++if (((_card.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (_card.cost > 0)) or (not _card:can_use_consumeable())) then
++  return false
++end
++return true
+ end
+ 
+ --Checks if the cost of a voucher card is greater than what the player can afford and changes the 
+@@ -1338,6 +1371,8 @@ G.FUNCS.overlay_menu  = function(args)
+   G.OVERLAY_MENU.alignment.offset.y = 0
+   G.ROOM.jiggle = G.ROOM.jiggle + 1
+   G.OVERLAY_MENU:align_to_major()
++
++  G.CONTROLLER.touch_control.clear_touch = true
+ end
+ 
+ --Removes the overlay menu if one exists, unpauses the game, and saves the settings to file
+@@ -1350,6 +1385,7 @@ G.FUNCS.exit_overlay_menu = function()
+   G.OVERLAY_MENU = nil
+   G.VIEWING_DECK = nil
+   G.SETTINGS.paused = false
++  G.CONTROLLER.touch_control.clear_touch = true
+ 
+   --Save settings to file
+   G:save_settings()
+@@ -2094,7 +2130,7 @@ end
+     end
+   end
+ 
+-  G.FUNCS.can_select_card = function(e)
++  G.FUNCS.select_button_check = function(e)
+     if e.config.ref_table.ability.set ~= 'Joker' or (e.config.ref_table.edition and e.config.ref_table.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then 
+         e.config.colour = G.C.GREEN
+         e.config.button = 'use_card'
+@@ -2104,6 +2140,13 @@ end
+     end
+   end
+ 
++  G.FUNCS.can_select_card = function(_card)
++    if _card.ability.set ~= 'Joker' or (_card.edition and _card.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then 
++      return true
++    end
++    return false
++  end
++
+   G.FUNCS.can_sell_card = function(e)
+     if e.config.ref_table:can_sell_card() then 
+         e.config.colour = G.C.GREEN
+diff --git a/functions/misc_functions.lua b/functions/misc_functions.lua
+index 24c296e..d941409 100644
+--- a/functions/misc_functions.lua
++++ b/functions/misc_functions.lua
+@@ -2020,3 +2020,121 @@ function RESET_STATES(state)
+       end
+   end
+ end
++
++function create_drag_target_from_card(_card)
++  if _card and G.STAGE == G.STAGES.RUN then
++      G.DRAG_TARGETS = G.DRAG_TARGETS or {
++          S_buy =         Moveable{T={x = G.jokers.T.x, y = G.jokers.T.y - 0.1, w = G.consumeables.T.x + G.consumeables.T.w - G.jokers.T.x, h = G.jokers.T.h+0.6}},
++          S_buy_and_use=  Moveable{T={x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w-0.1, h = 4.5}},
++          C_sell =        Moveable{T={x = G.jokers.T.x, y = G.jokers.T.y - 0.2, w = G.jokers.T.w, h = G.jokers.T.h+0.6}},
++          J_sell =        Moveable{T={x = G.consumeables.T.x+0.3, y = G.consumeables.T.y - 0.2, w = G.consumeables.T.w-0.3, h = G.consumeables.T.h+0.6}},
++          C_use =         Moveable{T={x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w-0.1, h =4.5}},
++          P_select =      Moveable{T={x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w + 2, h = G.play.T.h + 1}},
++      }
++
++      if _card.area and (_card.area == G.shop_jokers or _card.area == G.shop_vouchers or _card.area == G.shop_booster) then 
++          local buy_loc = copy_table(localize((_card.area == G.shop_vouchers and 'ml_redeem_target') or (_card.area == G.shop_booster and 'ml_open_target') or 'ml_buy_target'))
++          buy_loc[#buy_loc + 1] = '$'.._card.cost
++          drag_target({ cover = G.DRAG_TARGETS.S_buy, colour = adjust_alpha(G.C.GREEN, 0.9), text = buy_loc,
++              card = _card,
++              active_check = (function(other)
++                  return G.FUNCS.can_buy(other)
++              end),  
++              release_func = (function(other)
++                  if other.area == G.shop_jokers and G.FUNCS.can_buy(other) then 
++                      if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.button_listen == 'buy_from_shop' then
++                        G.FUNCS.tut_next()
++                      end
++                      G.FUNCS.buy_from_shop({config = {
++                          ref_table = other,
++                          id = 'buy'
++                      }})
++                      return
++                  elseif other.area == G.shop_vouchers and G.FUNCS.can_buy(other) then
++                      G.FUNCS.use_card({config={ref_table = other}})
++                  elseif other.area == G.shop_booster and G.FUNCS.can_buy(other) then
++                      G.FUNCS.use_card({config={ref_table = other}})
++                  end
++              end)
++          })
++
++          if G.FUNCS.can_buy_and_use(_card) then
++              local buy_use_loc = copy_table(localize('ml_buy_and_use_target'))
++              buy_use_loc[#buy_use_loc + 1] = '$'.._card.cost
++              drag_target({ cover = G.DRAG_TARGETS.S_buy_and_use, colour = adjust_alpha(G.C.ORANGE, 0.9),text=buy_use_loc,
++              card = _card,
++              active_check = (function(other)
++                  return G.FUNCS.can_buy_and_use(other)
++              end),  
++              release_func = (function(other)
++                  if G.FUNCS.can_buy_and_use(other) then 
++                      G.FUNCS.buy_from_shop({config = {
++                          ref_table = other,
++                          id = 'buy_and_use'
++                      }})
++                      return
++                  end
++              end)
++              })
++          end
++      end
++
++      if _card.area and (_card.area == G.pack_cards) then
++          if _card.ability.consumeable and not (_card.ability.set == 'Planet') then
++              drag_target({ cover = G.DRAG_TARGETS.C_use, colour = adjust_alpha(G.C.RED, 0.9),text = {localize('b_use')},
++                  card = _card,
++                  active_check = (function(other)
++                      return other:can_use_consumeable()
++                  end),  
++                  release_func = (function(other)
++                      if other:can_use_consumeable() then
++                        G.FUNCS.use_card({config={ref_table = other}})
++                      end
++                  end)
++              })
++          else 
++              drag_target({ cover = G.DRAG_TARGETS.P_select, colour = adjust_alpha(G.C.GREEN, 0.9), text = {localize('b_select')},
++                  card = _card,
++                  active_check = (function(other)
++                      return G.FUNCS.can_select_card(other)
++                  end),  
++                  release_func = (function(other)
++                      if G.FUNCS.can_select_card(other) then 
++                          G.FUNCS.use_card({config={ref_table = other}})
++                      end
++                  end)
++              })
++          end
++      end
++
++      if _card.area and (_card.area == G.jokers or _card.area == G.consumeables) then 
++          local sell_loc = copy_table(localize('ml_sell_target'))
++          sell_loc[#sell_loc + 1] = '$'..(_card.facing == 'back' and '?' or _card.sell_cost)
++          drag_target({ cover = _card.area == G.consumeables and G.DRAG_TARGETS.C_sell or G.DRAG_TARGETS.J_sell, colour = adjust_alpha(G.C.GOLD, 0.9),text = sell_loc,
++              card = _card,
++              active_check = (function(other)
++                  return other:can_sell_card()
++              end),    
++              release_func = (function(other)
++                  G.FUNCS.sell_card{config={ref_table=other}}
++              end)
++          })
++          if _card.area == G.consumeables then
++              drag_target({ cover = G.DRAG_TARGETS.C_use, colour = adjust_alpha(G.C.RED, 0.9),text = {localize('b_use')},
++              card = _card,
++              active_check = (function(other)
++                  return other:can_use_consumeable()
++              end),
++              release_func = (function(other)
++                  if other:can_use_consumeable() then
++                    G.FUNCS.use_card({config={ref_table = other}})
++                    if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.button_listen == 'use_card' then
++                      G.FUNCS.tut_next()
++                    end
++                  end
++              end)
++          })
++          end
++      end
++  end
++end
+\ No newline at end of file
