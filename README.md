@@ -21,7 +21,7 @@ This mod has been tested and written against **Balatro 1.0.1n** (current patch a
 
 ## Disclaimer
 
-This mod was made from code belonging to LocalThunk and Playstack Games.
+This mod was made from code belonging to LocalThunk and Playstack Games. All I wish for this mod is for a future patch of Balatro to make it obsolete :)
 
 ## Background
 
