@@ -1,6 +1,7 @@
 # "Touch" controls for Balatro PC/Mac
 
-This Balatro mod injects the drag-and-drop interactions from the iOS port into the PC game. Making it a bit more fun to play on desktop and improves the experience on Steam Deck!
+This Balatro mod injects the drag-and-drop interactions from the iOS port into the PC game, making it a bit more fun to play on desktop and improving the experience on Steam Deck!
+The usual mouse controls are kept intact as well.
 
 [![](meta/balatro-touch-mode-0001.png)](meta/balatro-touch-mode.gif)
 
