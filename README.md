@@ -25,5 +25,5 @@ This mod was made from code belonging to LocalThunk and Playstack Games. All I w
 
 ## Background
 
-This mod is written by comparing the iOS and PC codebases, generating a diff and using [lovely-differ](https://github.com/a-e-m/lovely-differ) to write a `lovely.toml` file. This is convenient given the scope of this mod, but might make contributing a bit tricky.
-I obviously cannot re-distribute the PC/iOS source code but I will be documenting my process soon so people can replicate it and eventually contribute fixes/improvements.
+This mod was written by comparing the iOS and PC codebases, generating a diff and using [lovely-differ](https://github.com/a-e-m/lovely-differ) to write a `lovely.toml` file. This is convenient given the scope of this mod, but might make contributing a bit tricky.
+I obviously cannot re-distribute the PC/iOS source code, but I will be documenting my process soon, so people can replicate it and eventually contribute fixes/improvements.
