@@ -1,17 +1,16 @@
 [manifest]
-version = "1.0.0"
 dump_lua = true
 priority = 0
+version = "1.0.1"
 
 [[patches]]
 [patches.pattern]
-target = "card.lua"
+match_indent = true
 pattern = '''
 G.FUNCS.deck_info()
 end
 end
 '''
-position = "at"
 payload = '''
 G.FUNCS.deck_info()
 end
@@ -92,17 +91,17 @@ function Card:swipe_down()
     end
 end
 '''
-match_indent = true
+position = "at"
+target = "card.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "card.lua"
+match_indent = true
 pattern = '''
 Node.stop_hover(self)
 end
 '''
-position = "at"
 payload = '''
 Node.stop_hover(self)
 end
@@ -110,12 +109,13 @@ function Card:simple_touch()
     return false
 end
 '''
-match_indent = true
+position = "at"
+target = "card.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "card.lua"
+match_indent = true
 pattern = '''
 play_sound('tarot2', 1, 0.4)
 used_tarot:juice_up(0.3, 0.5)
@@ -127,7 +127,6 @@ end
 
 function Card:can_use_consumeable(any_state, skip_check)
 '''
-position = "at"
 payload = '''
 play_sound('tarot2', 1, 0.4)
 used_tarot:juice_up(0.3, 0.5)
@@ -140,17 +139,17 @@ end
 function Card:can_use_consumeable(any_state, skip_check)
     if not self.ability.consumeable then return false end
 '''
-match_indent = true
+position = "at"
+target = "card.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "cardarea.lua"
+match_indent = true
 pattern = '''
 elseif self.config.type == 'play' or self.config.type == 'shop' or self.config.type == 'consumeable' then
             card.states.drag.can = false
 '''
-position = "at"
 payload = '''
 elseif self.config.type == 'play' or self.config.type == 'shop' or self.config.type == 'consumeable' then
             if (self.config.type == 'shop') or (self.config.type == 'consumeable') then 
@@ -159,65 +158,65 @@ elseif self.config.type == 'play' or self.config.type == 'shop' or self.config.t
                 card.states.drag.can = false
             end
 '''
-match_indent = true
+position = "at"
+target = "cardarea.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/controller.lua"
+match_indent = true
 pattern = '''
 self.cursor_up.T = {x = x/(G.TILESCALE*G.TILESIZE), y = y/(G.TILESCALE*G.TILESIZE)}
     self.cursor_up.time = G.TIMERS.TOTAL
 '''
-position = "at"
 payload = '''
 self.cursor_up.T = {x = x/(G.TILESCALE*G.TILESIZE), y = y/(G.TILESCALE*G.TILESIZE)}
     self.cursor_up.time = G.TIMERS.TOTAL
     self.cursor_up.uptime = G.TIMERS.UPTIME
 '''
-match_indent = true
+position = "at"
+target = "engine/controller.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/controller.lua"
+match_indent = true
 pattern = '''
 self.cursor_down.T = {x = x/(G.TILESCALE*G.TILESIZE), y = y/(G.TILESCALE*G.TILESIZE)}
     self.cursor_down.time = G.TIMERS.TOTAL
 '''
-position = "at"
 payload = '''
 self.cursor_down.T = {x = x/(G.TILESCALE*G.TILESIZE), y = y/(G.TILESCALE*G.TILESIZE)}
     self.cursor_down.time = G.TIMERS.TOTAL
     self.cursor_down.uptime = G.TIMERS.UPTIME
 '''
-match_indent = true
+position = "at"
+target = "engine/controller.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/controller.lua"
+match_indent = true
 pattern = '''
 self.cursor_hover.T.x, self.cursor_hover.T.y =G.CURSOR.T.x, G.CURSOR.T.y
     self.cursor_hover.time = G.TIMERS.TOTAL
 '''
-position = "at"
 payload = '''
 self.cursor_hover.T.x, self.cursor_hover.T.y =G.CURSOR.T.x, G.CURSOR.T.y
     self.cursor_hover.time = G.TIMERS.TOTAL
     self.cursor_hover.uptime = G.TIMERS.UPTIME
 '''
-match_indent = true
+position = "at"
+target = "engine/controller.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/controller.lua"
+match_indent = true
 pattern = '''
 self.hovering.target:stop_hover()
     end
 '''
-position = "at"
 payload = '''
 self.hovering.target:stop_hover()
     end
@@ -236,17 +235,17 @@ self.hovering.target:stop_hover()
         end
     end
 '''
-match_indent = true
+position = "at"
+target = "engine/controller.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/controller.lua"
+match_indent = true
 pattern = '''
 --Process registry clicks
     self:process_registry()
 '''
-position = "at"
 payload = '''
 --Process registry clicks
     self:process_registry()
@@ -256,18 +255,18 @@ payload = '''
         self.dragging.handled = true
     end
 '''
-match_indent = true
+position = "at"
+target = "engine/controller.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/controller.lua"
+match_indent = true
 pattern = '''
 self.released_on.handled = false
 end
             end
 '''
-position = "at"
 payload = '''
 self.released_on.handled = false
 end
@@ -293,52 +292,52 @@ end
                 end
             end
 '''
-match_indent = true
+position = "at"
+target = "engine/controller.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/controller.lua"
+match_indent = true
 pattern = '''
 --Cursor is currently down
     if not self.cursor_down.handled then 
 '''
-position = "at"
 payload = '''
 --Cursor is currently down
     if not self.cursor_down.handled then 
         self.cursor_down.distance = 0
         self.cursor_down.duration = 0
 '''
-match_indent = true
+position = "at"
+target = "engine/controller.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/controller.lua"
+match_indent = true
 pattern = '''
 self.hovering = {target = nil, handled = true, prev_target = nil} --The node being hovered this frame
 self.released_on = {target = nil, handled = true, prev_target = nil} --The node that the cursor 'Released' on, like letting go of LMB
 '''
-position = "at"
 payload = '''
 self.hovering = {target = nil, handled = true, prev_target = nil} --The node being hovered this frame
 self.released_on = {target = nil, handled = true, prev_target = nil} --The node that the cursor 'Released' on, like letting go of LMB
 --Touch controller
 self.touch_control = {s_tap = {target = nil,handled = true}, l_press = {target = nil, handled = true}}
 '''
-match_indent = true
+position = "at"
+target = "engine/controller.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/node.lua"
+match_indent = true
 pattern = '''
 self.children.h_popup = nil
 end
 end
 '''
-position = "at"
 payload = '''
 self.children.h_popup = nil
 end
@@ -350,12 +349,13 @@ end
 function Node:can_long_press() return nil end
 function Node:can_hover_on_drag() return true end
 '''
-match_indent = true
+position = "at"
+target = "engine/node.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/ui.lua"
+match_indent = true
 pattern = '''
 self.config.h_popup = nil
 end
@@ -363,7 +363,6 @@ end
 
 function UIElement:release(other)
 '''
-position = "at"
 payload = '''
 self.config.h_popup = nil
 end
@@ -374,36 +373,36 @@ function UIElement:release(other)
         self.config.release_func(other)
     end
 '''
-match_indent = true
+position = "at"
+target = "engine/ui.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/ui.lua"
+match_indent = true
 pattern = '''
 G.FUNCS.tut_next()
 end
         G.FUNCS[self.config.button](self)
 '''
-position = "at"
 payload = '''
 G.FUNCS.tut_next()
 end
         G.FUNCS[self.config.button](self)
         -- G.CONTROLLER.touch_control.only_hover = G.ROOM
 '''
-match_indent = true
+position = "at"
+target = "engine/ui.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/ui.lua"
+match_indent = true
 pattern = '''
 self.config.object:draw()
 end
     end
 '''
-position = "at"
 payload = '''
 self.config.object:draw()
 end
@@ -421,27 +420,28 @@ end
         love.graphics.pop()
     end
 '''
-match_indent = true
+position = "at"
+target = "engine/ui.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "engine/ui.lua"
+match_indent = true
 pattern = '''
 self.ARGS.button_colours[1] = self.config.button_delay and mix_colours(self.config.colour, G.C.L_BLACK, 0.5) or self.config.colour
             self.ARGS.button_colours[2] = (((collided_button.config.hover and collided_button.states.hover.is) or (collided_button.last_clicked and collided_button.last_clicked > G.TIMERS.REAL - 0.1)) and G.C.UI.HOVER or nil)
 '''
-position = "at"
 payload = '''
 self.ARGS.button_colours[1] = self.config.button_delay and mix_colours(self.config.colour, G.C.L_BLACK, 0.5) or self.config.colour
             self.ARGS.button_colours[2] = (((collided_button.config.hover and collided_button.states.hover.is and ((not G.CONTROLLER.HID.touch) or G.CONTROLLER.is_cursor_down)) or (collided_button.last_clicked and collided_button.last_clicked > G.TIMERS.REAL - 0.1)) and G.C.UI.HOVER or nil)
 '''
-match_indent = true
+position = "at"
+target = "engine/ui.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = true
 pattern = '''
 local temp_blind = AnimatedSprite(0,0,1,1, G.ANIMATION_ATLAS['blind_chips'], v.pos)
 temp_blind:define_draw_steps({
@@ -453,7 +453,6 @@ temp_blind.states.hover.can = true
 temp_blind.states.drag.can = false
           temp_blind.states.collide.can = true
 '''
-position = "at"
 payload = '''
 local temp_blind = AnimatedSprite(0,0,1,1, G.ANIMATION_ATLAS['blind_chips'], v.pos)
 temp_blind:define_draw_steps({
@@ -466,12 +465,13 @@ temp_blind.states.drag.can = false
           temp_blind.states.collide.can = true
           -- temp_blind.touch_collide_tilt = true
 '''
-match_indent = true
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = true
 pattern = '''
 G.CONTROLLER:snap_to{node = temp_blind}
 return true
@@ -483,7 +483,6 @@ temp_blind.states.hover.can = true
 temp_blind.states.drag.can = false
     temp_blind.states.collide.can = true
 '''
-position = "at"
 payload = '''
 G.CONTROLLER:snap_to{node = temp_blind}
 return true
@@ -496,12 +495,13 @@ temp_blind.states.drag.can = false
     temp_blind.states.collide.can = true
     -- temp_blind.touch_collide_tilt = true
 '''
-match_indent = true
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = true
 pattern = '''
 card.children.price.alignment.offset.y = card.ability.set == 'Booster' and 0.5 or 0.38
 
@@ -510,7 +510,6 @@ end)
 }))
   end
 '''
-position = "at"
 payload = '''
 card.children.price.alignment.offset.y = card.ability.set == 'Booster' and 0.5 or 0.38
 
@@ -569,108 +568,109 @@ end)
       }))
   end
 '''
-match_indent = true
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = true
 pattern = '''
 local t3 = {
             n=G.UIT.ROOT, config = {id = 'buy_and_use', ref_table = card, minh = 1.1, padding = 0.1, align = 'cr', colour = G.C.RED, shadow = true, r = 0.08, minw = 1.1, func = 'can_buy_and_use', one_press = true, button = 'buy_from_shop', hover = true, focus_args = {type = 'none'}}, nodes={
 '''
-position = "at"
 payload = '''
 local t3 = {
             n=G.UIT.ROOT, config = {id = 'buy_and_use', ref_table = card, minh = 1.1, padding = 0.1, align = 'cr', colour = G.C.RED, shadow = true, r = 0.08, minw = 1.1, func = 'buy_and_use_button_check', one_press = true, button = 'buy_from_shop', hover = true, focus_args = {type = 'none'}}, nodes={
 '''
-match_indent = true
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = true
 pattern = '''
 }} or {
             n=G.UIT.ROOT, config = {ref_table = card, minw = 1.1, maxw = 1.3, padding = 0.1, align = 'bm', colour = G.C.GOLD, shadow = true, r = 0.08, minh = 0.94, func = 'can_buy', one_press = true, button = 'buy_from_shop', hover = true}, nodes={
 '''
-position = "at"
 payload = '''
 }} or {
             n=G.UIT.ROOT, config = {ref_table = card, minw = 1.1, maxw = 1.3, padding = 0.1, align = 'bm', colour = G.C.GOLD, shadow = true, r = 0.08, minh = 0.94, func = 'buy_button_check', one_press = true, button = 'buy_from_shop', hover = true}, nodes={
 '''
-match_indent = true
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = true
 pattern = '''
 card = card, parent = base_attach, type = 'select',
       func = 'can_select_card', button = 'use_card', card_width = card_width
 '''
-position = "at"
 payload = '''
 card = card, parent = base_attach, type = 'select',
       func = 'select_button_check', button = 'use_card', card_width = card_width
 '''
-match_indent = true
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = true
 pattern = '''
 base_attach.children.buy = G.UIDEF.card_focus_button{
 card = card, parent = base_attach, type = 'buy',
       func = 'can_buy', button = 'buy_from_shop', card_width = card_width, buy_and_use = buy_and_use
 '''
-position = "at"
 payload = '''
 base_attach.children.buy = G.UIDEF.card_focus_button{
 card = card, parent = base_attach, type = 'buy',
       func = 'buy_button_check', button = 'buy_from_shop', card_width = card_width, buy_and_use = buy_and_use
 '''
-match_indent = true
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = true
 pattern = '''
 card = card, parent = base_attach, type = 'buy_and_use',
         func = 'can_buy_and_use', button = 'buy_from_shop', card_width = card_width
 '''
-position = "at"
 payload = '''
 card = card, parent = base_attach, type = 'buy_and_use',
         func = 'buy_and_use_button_check', button = 'buy_from_shop', card_width = card_width
 '''
-match_indent = true
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/UI_definitions.lua"
+match_indent = true
 pattern = '''
 elseif card.area and card.area == G.pack_cards then
 return {
 n=G.UIT.ROOT, config = {padding = 0, colour = G.C.CLEAR}, nodes={
         {n=G.UIT.R, config={ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5*card.T.w - 0.15, maxw = 0.9*card.T.w - 0.15, minh = 0.3*card.T.h, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_select_card'}, nodes={
 '''
-position = "at"
 payload = '''
 elseif card.area and card.area == G.pack_cards then
 return {
 n=G.UIT.ROOT, config = {padding = 0, colour = G.C.CLEAR}, nodes={
         {n=G.UIT.R, config={ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5*card.T.w - 0.15, maxw = 0.9*card.T.w - 0.15, minh = 0.3*card.T.h, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'select_button_check'}, nodes={
 '''
-match_indent = true
+position = "at"
+target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/button_callbacks.lua"
+match_indent = true
 pattern = '''
 if e.config.ref_table.ability.set ~= 'Joker' or (e.config.ref_table.edition and e.config.ref_table.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then
 e.config.colour = G.C.GREEN
@@ -681,7 +681,6 @@ e.config.button = nil
 end
   end
 '''
-position = "at"
 payload = '''
 if e.config.ref_table.ability.set ~= 'Joker' or (e.config.ref_table.edition and e.config.ref_table.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then
 e.config.colour = G.C.GREEN
@@ -698,12 +697,13 @@ end
     return false
   end
 '''
-match_indent = true
+position = "at"
+target = "functions/button_callbacks.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/button_callbacks.lua"
+match_indent = true
 pattern = '''
 if e.config.ref_table:can_use_consumeable() then
 e.config.colour = G.C.RED
@@ -716,7 +716,6 @@ end
 
   G.FUNCS.can_select_card = function(e)
 '''
-position = "at"
 payload = '''
 if e.config.ref_table:can_use_consumeable() then
 e.config.colour = G.C.RED
@@ -729,44 +728,45 @@ end
 
   G.FUNCS.select_button_check = function(e)
 '''
-match_indent = true
+position = "at"
+target = "functions/button_callbacks.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/button_callbacks.lua"
+match_indent = true
 pattern = '''
 G.VIEWING_DECK = nil
   G.SETTINGS.paused = false
 '''
-position = "at"
 payload = '''
 G.VIEWING_DECK = nil
   G.SETTINGS.paused = false
   G.CONTROLLER.touch_control.clear_touch = true
 '''
-match_indent = true
+position = "at"
+target = "functions/button_callbacks.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/button_callbacks.lua"
+match_indent = true
 pattern = '''
 G.ROOM.jiggle = G.ROOM.jiggle + 1
   G.OVERLAY_MENU:align_to_major()
 '''
-position = "at"
 payload = '''
 G.ROOM.jiggle = G.ROOM.jiggle + 1
   G.OVERLAY_MENU:align_to_major()
   G.CONTROLLER.touch_control.clear_touch = true
 '''
-match_indent = true
+position = "at"
+target = "functions/button_callbacks.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/button_callbacks.lua"
+match_indent = true
 pattern = '''
 e.UIBox.alignment.offset.y = 0
 end
@@ -791,7 +791,6 @@ G.FUNCS.can_buy_and_use = function(e)
         e.config.button = 'buy_from_shop'
     end
 '''
-position = "at"
 payload = '''
 e.UIBox.alignment.offset.y = 0
 end
@@ -822,18 +821,18 @@ if (((_card.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (_card.cost > 0)) or
 end
 return true
 '''
-match_indent = true
+position = "at"
+target = "functions/button_callbacks.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/button_callbacks.lua"
+match_indent = true
 pattern = '''
 e.UIBox.alignment.offset.y = 0
 end
     end
 '''
-position = "at"
 payload = '''
 e.UIBox.alignment.offset.y = 0
 end
@@ -846,12 +845,13 @@ if _card.cost > (G.GAME.dollars - G.GAME.bankrupt_at) and (_card.cost > 0) then
 end
 return true
 '''
-match_indent = true
+position = "at"
+target = "functions/button_callbacks.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/button_callbacks.lua"
+match_indent = true
 pattern = '''
 if (e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (e.config.ref_table.cost > 0) then
 e.config.colour = G.C.UI.BACKGROUND_INACTIVE
@@ -867,7 +867,6 @@ else
         e.UIBox.alignment.offset.y = 0
       end
 '''
-position = "at"
 payload = '''
 if (e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (e.config.ref_table.cost > 0) then
 e.config.colour = G.C.UI.BACKGROUND_INACTIVE
@@ -875,12 +874,13 @@ e.config.button = nil
 else
       e.UIBox.alignment.offset.y = 0
 '''
-match_indent = true
+position = "at"
+target = "functions/button_callbacks.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/button_callbacks.lua"
+match_indent = true
 pattern = '''
 G.hand:sort('desc')
 play_sound('paper1')
@@ -896,7 +896,6 @@ G.FUNCS.can_buy = function(e)
         e.config.colour = G.C.UI.BACKGROUND_INACTIVE
         e.config.button = nil
 '''
-position = "at"
 payload = '''
 G.hand:sort('desc')
 play_sound('paper1')
@@ -919,18 +918,18 @@ G.FUNCS.buy_button_check = function(e)
     if e.config.ref_parent.children.buy_and_use.states.visible then
       e.UIBox.alignment.offset.y = -0.6
 '''
-match_indent = true
+position = "at"
+target = "functions/button_callbacks.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/button_callbacks.lua"
+match_indent = true
 pattern = '''
 G.hand:sort('desc')
 play_sound('paper1')
 end
 '''
-position = "at"
 payload = '''
 G.hand:sort('desc')
 play_sound('paper1')
@@ -954,19 +953,19 @@ G.FUNCS.check_drag_target_active = function(e)
   e.config.args.init = true
 end
 '''
-match_indent = true
+position = "at"
+target = "functions/button_callbacks.lua"
 times = 1
 
 [[patches]]
 [patches.pattern]
-target = "functions/misc_functions.lua"
+match_indent = true
 pattern = '''
 s.created_on_state = state
 end
 end
 end
 '''
-position = "at"
 payload = '''
 s.created_on_state = state
 end
@@ -982,6 +981,9 @@ function create_drag_target_from_card(_card)
           C_use =         Moveable{T={x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w-0.1, h =4.5}},
           P_select =      Moveable{T={x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w + 2, h = G.play.T.h + 1}},
       }
+      if DTM.config.harder_joker_sell == true then
+        G.DRAG_TARGETS.J_sell = Moveable{T={x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w-0.1, h = 4.5}}
+      end
       if _card.area and (_card.area == G.shop_jokers or _card.area == G.shop_vouchers or _card.area == G.shop_booster) then 
           local buy_loc = copy_table(localize((_card.area == G.shop_vouchers and 'ml_redeem_target') or (_card.area == G.shop_booster and 'ml_open_target') or 'ml_buy_target'))
           buy_loc[#buy_loc + 1] = '$'.._card.cost
@@ -1086,5 +1088,6 @@ function create_drag_target_from_card(_card)
   end
 end
 '''
-match_indent = true
+position = "at"
+target = "functions/misc_functions.lua"
 times = 1

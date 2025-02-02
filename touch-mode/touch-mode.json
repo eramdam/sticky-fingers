@@ -1,14 +1,14 @@
 {
-  "id": "eramdam.touch-mode",
-  "name": "Touch controls",
+  "id": "eramdam.desktop-touch-mode",
+  "name": "Touch controls for desktop",
   "author": ["Eramdam"],
-  "description": "Enables mobile-like touch controls",
+  "description": "Enables mobile-like touch controls to sell/use/select cards",
   "prefix": "eramdam.dtm",
   "main_file": "main.lua",
   "priority": 0,
   "badge_colour": "666665",
   "badge_text_colour": "FFFFFF",
   "display_name": "",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "dependencies": ["Steamodded (>=1.*)", "Lovely (>=0.6)"]
 }
