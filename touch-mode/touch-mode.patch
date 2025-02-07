@@ -1,3 +1,20 @@
+diff --git a/.vscode/settings.json b/.vscode/settings.json
+new file mode 100644
+index 0000000..271a7ed
+--- /dev/null
++++ b/.vscode/settings.json
+@@ -0,0 +1,11 @@
++{
++  "[lua]": {
++    "editor.quickSuggestions": {
++      "comments": "inline",
++      "other": "on",
++      "strings": "on"
++    },
++    "editor.semanticHighlighting.enabled": true,
++    "editor.formatOnSave": false
++  }
++}
 diff --git a/card.lua b/card.lua
 index 2c95344..31b80a5 100644
 --- a/card.lua
@@ -439,10 +456,22 @@ diff --git a/functions/button_callbacks.lua b/functions/button_callbacks.lua
 index 6665746..041ccee 100644
 --- a/functions/button_callbacks.lua
 +++ b/functions/button_callbacks.lua
-@@ -47,26 +47,52 @@ G.FUNCS.sort_hand_value = function(e)
+@@ -47,26 +47,23 @@ G.FUNCS.sort_hand_value = function(e)
      play_sound('paper1')
  end
  
+---Checks if the cost of a non voucher card is greater than what the player can afford and changes the 
+---buy button visuals accordingly
+---
+----@param e {}
+---**e** Is the UIE that called this function
+-G.FUNCS.can_buy = function(e)
+-    if (e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (e.config.ref_table.cost > 0) then
+-        e.config.colour = G.C.UI.BACKGROUND_INACTIVE
+-        e.config.button = nil
+-    else
+-        e.config.colour = G.C.ORANGE
+-        e.config.button = 'buy_from_shop'
 +G.FUNCS.check_drag_target_active = function(e)
 +  if e.config.args.active_check(e.config.args.card) then
 +    if (not e.config.pulse_border) or not e.config.args.init then
@@ -450,25 +479,32 @@ index 6665746..041ccee 100644
 +      e.config.colour = e.config.args.colour
 +      e.config.args.text_colour[4] = 1
 +      e.config.release_func = e.config.args.release_func
-+    end
+     end
+-    if e.config.ref_parent and e.config.ref_parent.children.buy_and_use then
+-      if e.config.ref_parent.children.buy_and_use.states.visible then
+-        e.UIBox.alignment.offset.y = -0.6
+-      else
+-        e.UIBox.alignment.offset.y = 0
+-      end
 +  else
 +    if (e.config.pulse_border) or not e.config.args.init  then 
 +      e.config.pulse_border = nil
 +      e.config.colour = adjust_alpha(G.C.L_BLACK, 0.9)
 +      e.config.args.text_colour[4] = 0.5
 +      e.config.release_func = nil
-+    end
+     end
 +  end
 +  e.config.args.init = true
-+end
-+
+ end
+ 
  --Checks if the cost of a non voucher card is greater than what the player can afford and changes the 
- --buy button visuals accordingly
+@@ -74,18 +71,54 @@ end
  --
  ---@param e {}
  --**e** Is the UIE that called this function
--G.FUNCS.can_buy = function(e)
--    if (e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (e.config.ref_table.cost > 0) then
+-G.FUNCS.can_buy_and_use = function(e)
+-    if (((e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (e.config.ref_table.cost > 0)) or (not e.config.ref_table:can_use_consumeable())) then
+-        e.UIBox.states.visible = false
 -        e.config.colour = G.C.UI.BACKGROUND_INACTIVE
 -        e.config.button = nil
 +G.FUNCS.buy_button_check = function(e)
@@ -483,15 +519,11 @@ index 6665746..041ccee 100644
 +    if e.config.ref_parent.children.buy_and_use.states.visible then
 +      e.UIBox.alignment.offset.y = -0.6
      else
--        e.config.colour = G.C.ORANGE
+-        if e.config.ref_table.highlighted then
+-          e.UIBox.states.visible = true
+-        end
+-        e.config.colour = G.C.SECONDARY_SET.Voucher
 -        e.config.button = 'buy_from_shop'
--    end
--    if e.config.ref_parent and e.config.ref_parent.children.buy_and_use then
--      if e.config.ref_parent.children.buy_and_use.states.visible then
--        e.UIBox.alignment.offset.y = -0.6
--      else
--        e.UIBox.alignment.offset.y = 0
--      end
 +      e.UIBox.alignment.offset.y = 0
      end
 +  end
@@ -502,25 +534,13 @@ index 6665746..041ccee 100644
 +  return false
 +end
 +return true
- end
- 
- --Checks if the cost of a non voucher card is greater than what the player can afford and changes the 
-@@ -74,18 +100,25 @@ end
- --
- ---@param e {}
- --**e** Is the UIE that called this function
--G.FUNCS.can_buy_and_use = function(e)
--    if (((e.config.ref_table.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (e.config.ref_table.cost > 0)) or (not e.config.ref_table:can_use_consumeable())) then
--        e.UIBox.states.visible = false
--        e.config.colour = G.C.UI.BACKGROUND_INACTIVE
--        e.config.button = nil
--    else
--        if e.config.ref_table.highlighted then
--          e.UIBox.states.visible = true
--        end
--        e.config.colour = G.C.SECONDARY_SET.Voucher
--        e.config.button = 'buy_from_shop'
--    end
++end
++
++--Checks if the cost of a non voucher card is greater than what the player can afford and changes the 
++--buy button visuals accordingly
++--
++---@param e {}
++--**e** Is the UIE that called this function
 +G.FUNCS.buy_and_use_button_check = function(e)
 +  if not G.FUNCS.can_buy_and_use(e.config.ref_table) then
 +      e.UIBox.states.visible = false
@@ -584,10 +604,10 @@ index 6665746..041ccee 100644
      if e.config.ref_table:can_sell_card() then 
          e.config.colour = G.C.GREEN
 diff --git a/functions/misc_functions.lua b/functions/misc_functions.lua
-index 24c296e..d941409 100644
+index 24c296e..3262ba9 100644
 --- a/functions/misc_functions.lua
 +++ b/functions/misc_functions.lua
-@@ -2020,3 +2020,121 @@ function RESET_STATES(state)
+@@ -2020,3 +2020,127 @@ function RESET_STATES(state)
        end
    end
  end
@@ -602,6 +622,12 @@ index 24c296e..d941409 100644
 +          C_use =         Moveable{T={x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w-0.1, h =4.5}},
 +          P_select =      Moveable{T={x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w + 2, h = G.play.T.h + 1}},
 +      }
++
++      if DTM.config.harder_joker_sell == true then
++        G.DRAG_TARGETS.J_sell = Moveable{T={x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w-0.1, h = 4.5}}
++      else
++        G.DRAG_TARGETS.J_sell = Moveable{T={x = G.consumeables.T.x+0.3, y = G.consumeables.T.y - 0.2, w = G.consumeables.T.w-0.3, h = G.consumeables.T.h+0.6}}
++      end
 +
 +      if _card.area and (_card.area == G.shop_jokers or _card.area == G.shop_vouchers or _card.area == G.shop_booster) then 
 +          local buy_loc = copy_table(localize((_card.area == G.shop_vouchers and 'ml_redeem_target') or (_card.area == G.shop_booster and 'ml_open_target') or 'ml_buy_target'))
