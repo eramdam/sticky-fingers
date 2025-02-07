@@ -1,20 +1,3 @@
-diff --git a/.vscode/settings.json b/.vscode/settings.json
-new file mode 100644
-index 0000000..271a7ed
---- /dev/null
-+++ b/.vscode/settings.json
-@@ -0,0 +1,11 @@
-+{
-+  "[lua]": {
-+    "editor.quickSuggestions": {
-+      "comments": "inline",
-+      "other": "on",
-+      "strings": "on"
-+    },
-+    "editor.semanticHighlighting.enabled": true,
-+    "editor.formatOnSave": false
-+  }
-+}
 diff --git a/card.lua b/card.lua
 index 2c95344..31b80a5 100644
 --- a/card.lua
