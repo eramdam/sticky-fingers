@@ -1,7 +1,7 @@
 [manifest]
 dump_lua = true
 priority = 0
-version = "1.0.1"
+version = "1.0.2"
 
 [[patches]]
 [patches.pattern]
@@ -437,66 +437,6 @@ self.ARGS.button_colours[1] = self.config.button_delay and mix_colours(self.conf
 '''
 position = "at"
 target = "engine/ui.lua"
-times = 1
-
-[[patches]]
-[patches.pattern]
-match_indent = true
-pattern = '''
-local temp_blind = AnimatedSprite(0,0,1,1, G.ANIMATION_ATLAS['blind_chips'], v.pos)
-temp_blind:define_draw_steps({
-{shader = 'dissolve', shadow_height = 0.05},
-{shader = 'dissolve'}
-})
-temp_blind.float = true
-temp_blind.states.hover.can = true
-temp_blind.states.drag.can = false
-          temp_blind.states.collide.can = true
-'''
-payload = '''
-local temp_blind = AnimatedSprite(0,0,1,1, G.ANIMATION_ATLAS['blind_chips'], v.pos)
-temp_blind:define_draw_steps({
-{shader = 'dissolve', shadow_height = 0.05},
-{shader = 'dissolve'}
-})
-temp_blind.float = true
-temp_blind.states.hover.can = true
-temp_blind.states.drag.can = false
-          temp_blind.states.collide.can = true
-          -- temp_blind.touch_collide_tilt = true
-'''
-position = "at"
-target = "functions/UI_definitions.lua"
-times = 1
-
-[[patches]]
-[patches.pattern]
-match_indent = true
-pattern = '''
-G.CONTROLLER:snap_to{node = temp_blind}
-return true
-end)
-}))
-end
-temp_blind.float = true
-temp_blind.states.hover.can = true
-temp_blind.states.drag.can = false
-    temp_blind.states.collide.can = true
-'''
-payload = '''
-G.CONTROLLER:snap_to{node = temp_blind}
-return true
-end)
-}))
-end
-temp_blind.float = true
-temp_blind.states.hover.can = true
-temp_blind.states.drag.can = false
-    temp_blind.states.collide.can = true
-    -- temp_blind.touch_collide_tilt = true
-'''
-position = "at"
-target = "functions/UI_definitions.lua"
 times = 1
 
 [[patches]]

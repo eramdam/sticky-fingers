@@ -306,7 +306,7 @@ index 9001108..fc14144 100644
  end
  
 diff --git a/functions/UI_definitions.lua b/functions/UI_definitions.lua
-index 3463f81..7746c45 100644
+index b423d7c..c71eaad 100644
 --- a/functions/UI_definitions.lua
 +++ b/functions/UI_definitions.lua
 @@ -277,7 +277,7 @@ function G.UIDEF.use_and_sell_buttons(card)
@@ -419,24 +419,8 @@ index 3463f81..7746c45 100644
  
    function attention_text(args)
      args = args or {}
-@@ -3996,6 +4051,7 @@ function create_UIBox_your_collection_blinds(exit)
-     temp_blind.states.hover.can = true
-     temp_blind.states.drag.can = false
-     temp_blind.states.collide.can = true
-+    -- temp_blind.touch_collide_tilt = true
-     temp_blind.config = {blind = v, force_focus = true}
-     if discovered and not v.alerted then 
-       blinds_to_be_alerted[#blinds_to_be_alerted+1] = temp_blind
-@@ -5561,6 +5617,7 @@ function G.UIDEF.challenge_description_tab(args)
-           temp_blind.states.hover.can = true
-           temp_blind.states.drag.can = false
-           temp_blind.states.collide.can = true
-+          -- temp_blind.touch_collide_tilt = true
-           temp_blind.config = {blind = v, force_focus = true}
-           temp_blind.hover = function()
-             if not G.CONTROLLER.dragging.target or G.CONTROLLER.using_touch then 
 diff --git a/functions/button_callbacks.lua b/functions/button_callbacks.lua
-index 6665746..041ccee 100644
+index d6b9866..2780a8e 100644
 --- a/functions/button_callbacks.lua
 +++ b/functions/button_callbacks.lua
 @@ -47,26 +47,23 @@ G.FUNCS.sort_hand_value = function(e)
@@ -546,7 +530,7 @@ index 6665746..041ccee 100644
  end
  
  --Checks if the cost of a voucher card is greater than what the player can afford and changes the 
-@@ -1338,6 +1371,8 @@ G.FUNCS.overlay_menu  = function(args)
+@@ -1353,6 +1386,8 @@ G.FUNCS.overlay_menu  = function(args)
    G.OVERLAY_MENU.alignment.offset.y = 0
    G.ROOM.jiggle = G.ROOM.jiggle + 1
    G.OVERLAY_MENU:align_to_major()
@@ -555,7 +539,7 @@ index 6665746..041ccee 100644
  end
  
  --Removes the overlay menu if one exists, unpauses the game, and saves the settings to file
-@@ -1350,6 +1385,7 @@ G.FUNCS.exit_overlay_menu = function()
+@@ -1365,6 +1400,7 @@ G.FUNCS.exit_overlay_menu = function()
    G.OVERLAY_MENU = nil
    G.VIEWING_DECK = nil
    G.SETTINGS.paused = false
@@ -563,7 +547,7 @@ index 6665746..041ccee 100644
  
    --Save settings to file
    G:save_settings()
-@@ -2094,7 +2130,7 @@ end
+@@ -2109,7 +2145,7 @@ end
      end
    end
  
@@ -572,7 +556,7 @@ index 6665746..041ccee 100644
      if e.config.ref_table.ability.set ~= 'Joker' or (e.config.ref_table.edition and e.config.ref_table.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then 
          e.config.colour = G.C.GREEN
          e.config.button = 'use_card'
-@@ -2104,6 +2140,13 @@ end
+@@ -2119,6 +2155,13 @@ end
      end
    end
  
