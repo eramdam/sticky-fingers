@@ -1,7 +1,6 @@
-# "Touch" controls for Balatro PC/Mac
+# Sticky Fingers
 
-This Balatro mod injects the drag-and-drop interactions from the iOS port into the PC game, making it a bit more fun to play on desktop and improving the experience on Steam Deck!
-The usual mouse controls are kept intact as well.
+A mod that brings "touch" controls to Balatro on PC/Mac, making it a bit more fun to play on desktop and improving the experience on touch-based PCs like the Steam Deck! The default mouse controls are kept intact.
 
 [![](meta/balatro-touch-mode-0001.png)](meta/balatro-touch-mode.gif)
 
@@ -15,7 +14,7 @@ This mod has been tested against **Balatro 1.0.1o** (current patch as of Februar
 
 0. This mod is made for [**Steammodded 1.x**](https://github.com/Steamodded/smods) and [lovely](https://github.com/ethangreen-dev/lovely-injector) so you will need to install them first [as explained here](https://github.com/Steamodded/smods/wiki).
 1. Download the newest version of the mod from the [Releases tab](https://github.com/eramdam/balatro-mods/releases)
-2. Extract the .zip file and move the `touch-mode` folder into your Mods file
+2. Extract the .zip file and move the `sticky-finger` folder into your Mods file
 3. Launch Balatro and enable the mod in the `Mods` panel
 4. Enjoy dragging Jokers, Booster packs and consumables around!
 
