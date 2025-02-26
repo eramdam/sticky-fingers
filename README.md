@@ -9,11 +9,11 @@ The usual mouse controls are kept intact as well.
 
 # Compatibility
 
-This mod has been tested and written against **Balatro 1.0.1n** (current patch as of January 12, 2025) on PC/Mac using code from the same patch on iOS. It has also been reported to work great on Steam Deck.
+This mod has been tested and written against **Balatro 1.0.1o** (current patch as of February 26, 2025) on PC/Mac using code from the same patch on iOS. It has also been reported to work great on Steam Deck.
 
 # Installation
 
-0. This mod is made for [**Steammodded**](https://github.com/Steamodded/) and [lovely](https://github.com/ethangreen-dev/lovely-injector) so you will need to install them first [as explained here](https://github.com/Steamodded/smods/wiki).
+0. This mod is made for [**Steammodded 1.x**](https://github.com/Steamodded/smods) and [lovely](https://github.com/ethangreen-dev/lovely-injector) so you will need to install them first [as explained here](https://github.com/Steamodded/smods/wiki).
 1. Download the newest version of the mod from the [Releases tab](https://github.com/eramdam/balatro-mods/releases)
 2. Extract the .zip file and move the `touch-mode` folder into your Mods file
 3. Launch Balatro and enable the mod in the `Mods` panel
