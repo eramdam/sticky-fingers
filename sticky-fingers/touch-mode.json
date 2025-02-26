@@ -1,5 +1,5 @@
 {
-  "id": "eramdam.touch-controls",
+  "id": "eramdam.sticky-fingers",
   "name": "Sticky Fingers",
   "author": ["Eramdam"],
   "description": "Enables mobile-like touch controls to sell/use/select cards",
@@ -9,6 +9,6 @@
   "badge_colour": "666665",
   "badge_text_colour": "FFFFFF",
   "display_name": "Sticky Fingers",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "dependencies": ["Steamodded (>=1.*)", "Lovely (>=0.6)"]
 }
