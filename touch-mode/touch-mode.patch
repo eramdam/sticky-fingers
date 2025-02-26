@@ -571,7 +571,7 @@ index d6b9866..2780a8e 100644
      if e.config.ref_table:can_sell_card() then 
          e.config.colour = G.C.GREEN
 diff --git a/functions/misc_functions.lua b/functions/misc_functions.lua
-index 24c296e..3262ba9 100644
+index 24c296e..849070f 100644
 --- a/functions/misc_functions.lua
 +++ b/functions/misc_functions.lua
 @@ -2020,3 +2020,127 @@ function RESET_STATES(state)
@@ -590,7 +590,7 @@ index 24c296e..3262ba9 100644
 +          P_select =      Moveable{T={x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w + 2, h = G.play.T.h + 1}},
 +      }
 +
-+      if DTM.config.harder_joker_sell == true then
++      if DTM.config.vanilla_joker_sell == false then
 +        G.DRAG_TARGETS.J_sell = Moveable{T={x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w-0.1, h = 4.5}}
 +      else
 +        G.DRAG_TARGETS.J_sell = Moveable{T={x = G.consumeables.T.x+0.3, y = G.consumeables.T.y - 0.2, w = G.consumeables.T.w-0.3, h = G.consumeables.T.h+0.6}}

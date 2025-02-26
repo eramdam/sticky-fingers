@@ -1,3 +1,3 @@
 return {
-  ["harder_joker_sell"] = true
+  ["vanilla_joker_sell"] = false
 }

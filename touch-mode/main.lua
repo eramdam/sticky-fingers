@@ -4,9 +4,6 @@ DTM.save_config = function(self)
   SMODS.save_mod_config(self)
 end
 
--- sendDebugMessage("enabled?" + DTM, "MyDebugLogger")
-print(inspect(DTM.config))
-
 DTM.config_tab = function()
   return {
     n = G.UIT.ROOT,
@@ -15,11 +12,11 @@ DTM.config_tab = function()
     },
     nodes = {
       create_toggle({
-        id = "harder_joker_sell",
-        label = "Harder Joker sell target",
-        info = {"Moves the Joker sell target further to avoid accidental sells"},
+        id = "vanilla_joker_sell",
+        label = "Vanilla Joker sell target",
+        info = {"Use the mobile Joker sell target. Beware of accidental sells!"},
         ref_table = DTM.config,
-        ref_value = "harder_joker_sell",
+        ref_value = "vanilla_joker_sell",
         callback = function()
           DTM:save_config()
         end,

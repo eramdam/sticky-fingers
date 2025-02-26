@@ -1,7 +1,7 @@
 [manifest]
 dump_lua = true
 priority = 0
-version = "1.0.2"
+version = "1.0.3"
 
 [[patches]]
 [patches.pattern]
@@ -921,7 +921,7 @@ function create_drag_target_from_card(_card)
           C_use =         Moveable{T={x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w-0.1, h =4.5}},
           P_select =      Moveable{T={x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w + 2, h = G.play.T.h + 1}},
       }
-      if DTM.config.harder_joker_sell == true then
+      if DTM.config.vanilla_joker_sell == false then
         G.DRAG_TARGETS.J_sell = Moveable{T={x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w-0.1, h = 4.5}}
       else
         G.DRAG_TARGETS.J_sell = Moveable{T={x = G.consumeables.T.x+0.3, y = G.consumeables.T.y - 0.2, w = G.consumeables.T.w-0.3, h = G.consumeables.T.h+0.6}}
