@@ -9,7 +9,7 @@ The usual mouse controls are kept intact as well.
 
 # Compatibility
 
-This mod has been tested and written against **Balatro 1.0.1o** (current patch as of February 26, 2025) on PC/Mac using code from the same patch on iOS. It has also been reported to work great on Steam Deck.
+This mod has been tested against **Balatro 1.0.1o** (current patch as of February 26, 2025) on PC/Mac using code from the same patch on iOS. It has also been reported to work great on Steam Deck.
 
 # Installation
 

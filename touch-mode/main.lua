@@ -1,3 +1,13 @@
+if SMODS.Atlas then
+  SMODS.Atlas({
+      key = "modicon",
+      path = "modicon.png",
+      px = 32,
+      py = 32
+  })
+end
+
+
 DTM = SMODS.current_mod
 
 DTM.save_config = function(self)
