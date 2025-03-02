@@ -12,7 +12,7 @@ This mod has been tested against **Balatro 1.0.1o** (current patch as of Februar
 
 # Installation
 
-0. This mod is made for [**Steammodded 1.x**](https://github.com/Steamodded/smods) and [lovely](https://github.com/ethangreen-dev/lovely-injector) so you will need to install them first [as explained here](https://github.com/Steamodded/smods/wiki). You will want to use the newest [tagged release of Steammodded](https://github.com/Steamodded/smods/releases) as the version on `main` might be broken/unstable.
+0. This mod is made for [**Steammodded 1.x**](https://github.com/Steamodded/smods) and [lovely](https://github.com/ethangreen-dev/lovely-injector) so you will need to install them first [as explained here](https://github.com/Steamodded/smods/wiki). **Disclaimer:** You will want to use the newest [tagged release of Steammodded](https://github.com/Steamodded/smods/releases) as the version on `main` might be broken/unstable.
 1. Download the newest version of the mod from the [Releases tab](https://github.com/eramdam/balatro-mods/releases)
 2. Extract the .zip file and move the `sticky-fingers` folder into your Mods file
 3. Launch Balatro and enable the mod in the `Mods` panel
