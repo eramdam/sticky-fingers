@@ -14,7 +14,7 @@ This mod has been tested against **Balatro 1.0.1o** (current patch as of Februar
 
 0. This mod is made for [**Steammodded 1.x**](https://github.com/Steamodded/smods) and [lovely](https://github.com/ethangreen-dev/lovely-injector) so you will need to install them first [as explained here](https://github.com/Steamodded/smods/wiki).
 1. Download the newest version of the mod from the [Releases tab](https://github.com/eramdam/balatro-mods/releases)
-2. Extract the .zip file and move the `sticky-finger` folder into your Mods file
+2. Extract the .zip file and move the `sticky-fingers` folder into your Mods file
 3. Launch Balatro and enable the mod in the `Mods` panel
 4. Enjoy dragging Jokers, Booster packs and consumables around!
 
@@ -25,4 +25,4 @@ This mod was made from code belonging to LocalThunk and Playstack Games. All I w
 ## Background
 
 This mod was written by comparing the iOS and PC codebases, generating a diff and using [lovely-differ](https://github.com/a-e-m/lovely-differ) to write a `lovely.toml` file. This is convenient given the scope of this mod, but might make contributing a bit tricky.
-I obviously cannot re-distribute the PC/iOS source code, but I will be documenting my process soon, so people can replicate it and eventually contribute fixes/improvements.
+I obviously cannot re-distribute the PC/iOS source code, but [I documented my process on my blog](https://damien.zone/modding-balatro-on-pc-to-add-touch-controls/) so people can reproduce it.
