@@ -1,0 +1,2 @@
+- Figure out if some methods/code can be removed
+- Use addition/new files to introduce new methods instead of pattern replacements
