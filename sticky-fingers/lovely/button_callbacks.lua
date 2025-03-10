@@ -1,3 +1,11 @@
+function maybe_to_big(n)
+  if to_big ~= nil then
+    return to_big(n)
+  end
+
+  return n
+end
+
 G.FUNCS.check_drag_target_active = function(e)
   if e.config.args.active_check(e.config.args.card) then
     if (not e.config.pulse_border) or not e.config.args.init then
@@ -57,7 +65,7 @@ G.FUNCS.buy_button_check = function(e)
 end
 
 G.FUNCS.can_buy = function(_card)
-  if _card.cost > (G.GAME.dollars - G.GAME.bankrupt_at) and (_card.cost > 0) then
+  if maybe_to_big(_card.cost) > (maybe_to_big(G.GAME.dollars) - maybe_to_big(G.GAME.bankrupt_at)) and (maybe_to_big(_card.cost) > 0) then
     return false
   end
   return true
@@ -83,7 +91,7 @@ G.FUNCS.buy_and_use_button_check = function(e)
 end
 
 G.FUNCS.can_buy_and_use = function(_card)
-  if (((_card.cost > G.GAME.dollars - G.GAME.bankrupt_at) and (_card.cost > 0)) or (not _card:can_use_consumeable())) then
+  if (((maybe_to_big(_card.cost) > maybe_to_big(G.GAME.dollars) - maybe_to_big(G.GAME.bankrupt_at)) and (maybe_to_big(_card.cost) > 0)) or (not _card:can_use_consumeable())) then
     return false
   end
   return true
