@@ -1,3 +1,4 @@
+-- Allows compatibility with Talisman
 function maybe_to_big(n)
   if to_big ~= nil then
     return to_big(n)
