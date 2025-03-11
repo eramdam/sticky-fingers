@@ -66,7 +66,7 @@ G.FUNCS.buy_button_check = function(e)
 end
 
 G.FUNCS.can_buy = function(_card)
-  if maybe_to_big(_card.cost) > (maybe_to_big(G.GAME.dollars) - maybe_to_big(G.GAME.bankrupt_at)) and (maybe_to_big(_card.cost) > 0) then
+  if maybe_to_big(_card.cost) > (maybe_to_big(G.GAME.dollars) - maybe_to_big(G.GAME.bankrupt_at)) and (maybe_to_big(_card.cost) > maybe_to_big(0)) then
     return false
   end
   return true
@@ -92,7 +92,7 @@ G.FUNCS.buy_and_use_button_check = function(e)
 end
 
 G.FUNCS.can_buy_and_use = function(_card)
-  if (((maybe_to_big(_card.cost) > maybe_to_big(G.GAME.dollars) - maybe_to_big(G.GAME.bankrupt_at)) and (maybe_to_big(_card.cost) > 0)) or (not _card:can_use_consumeable())) then
+  if (((maybe_to_big(_card.cost) > maybe_to_big(G.GAME.dollars) - maybe_to_big(G.GAME.bankrupt_at)) and (maybe_to_big(_card.cost) > maybe_to_big(0))) or (not _card:can_use_consumeable())) then
     return false
   end
   return true
