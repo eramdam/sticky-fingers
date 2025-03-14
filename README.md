@@ -10,6 +10,8 @@ A mod that brings "touch" controls to Balatro on PC/Mac, making it a bit more fu
 
 This mod has been tested against **Balatro 1.0.1o** (current patch as of February 26, 2025) on PC/Mac using code from the same patch on iOS. It has also been reported to work great on Steam Deck.
 
+As of writing this mod is **NOT** compatible with Cryptid/Talisman. This is something I want to work on but I haven't had the time to do so yet.
+
 # Installation
 
 0. This mod is made for [**Steammodded 1.x**](https://github.com/Steamodded/smods) and [lovely](https://github.com/ethangreen-dev/lovely-injector) so you will need to install them first [as explained here](https://github.com/Steamodded/smods/wiki). **Disclaimer:** You will want to use the newest [tagged release of Steammodded](https://github.com/Steamodded/smods/releases) as the version on `main` might be broken/unstable.
@@ -24,5 +26,5 @@ This mod was made from code belonging to LocalThunk and Playstack Games. All I w
 
 ## Background
 
-The first version of this mod was written by comparing the iOS and PC codebases, generating a diff and using [lovely-differ](https://github.com/a-e-m/lovely-differ) to write a `lovely.toml` file. This is convenient given the scope of this mod, but might make contributing a bit tricky.
+This mod was written by comparing the iOS and PC codebases, generating a diff and using [lovely-differ](https://github.com/a-e-m/lovely-differ) to write a `lovely.toml` file. This is convenient given the scope of this mod, but might make contributing a bit tricky.
 I obviously cannot re-distribute the PC/iOS source code, but [I documented my process on my blog](https://damien.zone/modding-balatro-on-pc-to-add-touch-controls/) so people can reproduce it.
