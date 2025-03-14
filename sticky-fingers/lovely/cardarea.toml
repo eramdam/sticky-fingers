@@ -1,0 +1,23 @@
+[manifest]
+dump_lua = true
+priority = 0
+version = "1.1.0"
+
+[[patches]]
+[patches.pattern]
+match_indent = false
+pattern = '''
+elseif self.config.type == 'play' or self.config.type == 'shop' or self.config.type == 'consumeable' then
+card.states.drag.can = false
+'''
+payload = '''
+elseif self.config.type == 'play' or self.config.type == 'shop' or self.config.type == 'consumeable' then
+    if (self.config.type == 'shop') or (self.config.type == 'consumeable') then 
+        card.states.drag.can = true
+    else
+        card.states.drag.can = false
+    end
+'''
+position = "at"
+target = "cardarea.lua"
+times = 1

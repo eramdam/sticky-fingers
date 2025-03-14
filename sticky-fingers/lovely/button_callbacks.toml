@@ -1,0 +1,10 @@
+[manifest]
+dump_lua = true
+priority = 0
+version = "1.1.0"
+
+[[patches]]
+[patches.copy]
+position = "append"
+sources = ["lovely/button_callbacks.lua"]
+target = "functions/button_callbacks.lua"
