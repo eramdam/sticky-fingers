@@ -10,7 +10,7 @@ A mod that brings "touch" controls to Balatro on PC/Mac, making it a bit more fu
 
 This mod has been tested against **Balatro 1.0.1o** (current patch as of February 26, 2025) on PC/Mac using code from the same patch on iOS. It has also been reported to work great on Steam Deck.
 
-As of writing this mod is **NOT** compatible with Cryptid/Talisman. This is something I want to work on but I haven't had the time to do so yet.
+As of writing, this mod is **NOT** compatible with Cryptid/Talisman. This is something I want to work on but I haven't had the time to do so yet.
 
 # Installation
 
