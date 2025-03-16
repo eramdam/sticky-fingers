@@ -7,6 +7,8 @@ function create_drag_target_from_card(_card)
             J_sell = Moveable { T = { x = G.consumeables.T.x + 0.3, y = G.consumeables.T.y - 0.2, w = G.consumeables.T.w - 0.3, h = G.consumeables.T.h + 0.6 } },
             C_use = Moveable { T = { x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w - 0.1, h = 4.5 } },
             P_select = Moveable { T = { x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w + 2, h = G.play.T.h + 1 } },
+            -- for Cryptid code cards
+            P_pull = Moveable { T = { x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w - 2, h = G.play.T.h + 1 } },
         }
 
         if DTM.config.vanilla_joker_sell == false then
@@ -74,6 +76,23 @@ function create_drag_target_from_card(_card)
         end
 
         if _card.area and (_card.area == G.pack_cards) then
+            -- Cryptid code cards
+            if Cryptid and _card.ability.consumeable and _card.ability.set == 'Code' then
+                drag_target({
+                    cover = G.DRAG_TARGETS.P_pull,
+                    colour = adjust_alpha(G.C.GREEN, 0.9),
+                    text = { localize('b_pull') },
+                    card = _card,
+                    active_check = (function(other)
+                        return G.FUNCS.sticky_can_reserve_card(other)
+                    end),
+                    release_func = (function(other)
+                        if G.FUNCS.sticky_can_reserve_card(other) then
+                            G.FUNCS.reserve_card({ config = { ref_table = other } })
+                        end
+                    end),
+                })
+            end
             if _card.ability.consumeable and not (_card.ability.set == 'Planet') then
                 drag_target({
                     cover = G.DRAG_TARGETS.C_use,
@@ -96,10 +115,10 @@ function create_drag_target_from_card(_card)
                     text = { localize('b_select') },
                     card = _card,
                     active_check = (function(other)
-                        return G.FUNCS.can_select_card(other)
+                        return G.FUNCS.sticky_can_select_card(other)
                     end),
                     release_func = (function(other)
-                        if G.FUNCS.can_select_card(other) then
+                        if G.FUNCS.sticky_can_select_card(other) then
                             G.FUNCS.use_card({ config = { ref_table = other } })
                         end
                     end)

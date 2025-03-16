@@ -36,11 +36,37 @@ G.FUNCS.select_button_check = function(e)
   end
 end
 
-G.FUNCS.can_select_card = function(_card)
+local base_can_select_card = function(_card)
   if _card.ability.set ~= 'Joker' or (_card.edition and _card.edition.negative) or #G.jokers.cards < G.jokers.config.card_limit then
     return true
   end
   return false
+end
+
+G.FUNCS.can_select_card = base_can_select_card
+
+G.FUNCS.sticky_can_select_card = function(_card)
+  if Cryptid then
+    if
+        (_card.ability.name == "cry-Negative Joker" and _card.ability.extra >= 1)
+        or (_card.ability.name == "cry-soccer" and _card.ability.extra.holygrail >= 1)
+        or (_card.ability.name == "cry-Tenebris" and _card.ability.extra.slots >= 1)
+    then
+      return true
+    else
+      return base_can_select_card(_card)
+    end
+  else
+    return base_can_select_card(_card)
+  end
+end
+
+G.FUNCS.sticky_can_reserve_card = function(e)
+  if Cryptid then
+    local c1 = e
+    return #G.consumeables.cards
+        < G.consumeables.config.card_limit + (Cryptid.safe_get(c1, "edition", "negative") and 1 or 0)
+  end
 end
 
 --Checks if the cost of a non voucher card is greater than what the player can afford and changes the
