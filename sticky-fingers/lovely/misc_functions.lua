@@ -166,17 +166,11 @@ function create_drag_target_from_card(_card)
                     text = { localize('b_use') },
                     card = _card,
                     active_check = (function(other)
-                        -- huge hack for Cryptid Code cards: since their `can_use` method might check for highlighted consumeables, we need to temporarily add the card inside the highlighted table to satisfy the drag while drawing the drag_target
+                        -- huge hack for Cryptid Code cards: since their `can_use` method might check for highlighted consumeables, we need to temporarily add the card inside the highlighted table to satisfy the check while drawing the drag_target
                         if Cryptid and _card.ability.set == 'Code' and _card.area == G.consumeables then
                             _card.area.highlighted[#_card.area.highlighted + 1] = _card
                             local can_use = other:can_use_consumeable()
                             remove_highlighted_card_from_area(_card, _card.area)
-                            for i = #_card.area.highlighted, 1, -1 do
-                                if _card.area.highlighted[i] == _card then
-                                    table.remove(_card.area.highlighted, i)
-                                    break
-                                end
-                            end
                             return can_use
                         end
                         return other:can_use_consumeable()
