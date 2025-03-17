@@ -167,7 +167,7 @@ function create_drag_target_from_card(_card)
                     card = _card,
                     active_check = (function(other)
                         -- huge hack for Cryptid Code cards: since their `can_use` method might check for highlighted consumeables, we need to temporarily add the card inside the highlighted table to satisfy the check while drawing the drag_target
-                        if Cryptid and _card.ability.set == 'Code' and _card.area == G.consumeables then
+                        if Cryptid and _card.ability.set == 'Code' and _card.area and not is_element_in_table(_card, _card.area.highlighted) then
                             _card.area.highlighted[#_card.area.highlighted + 1] = _card
                             local can_use = other:can_use_consumeable()
                             remove_highlighted_card_from_area(_card, _card.area)
@@ -199,4 +199,13 @@ function remove_highlighted_card_from_area(card, area)
             break
         end
     end
+end
+
+function is_element_in_table(element, table)
+    for _, value in ipairs(table) do
+        if value == element then
+            return true
+        end
+    end
+    return false
 end
