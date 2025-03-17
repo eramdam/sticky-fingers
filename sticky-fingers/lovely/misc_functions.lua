@@ -166,10 +166,26 @@ function create_drag_target_from_card(_card)
                     text = { localize('b_use') },
                     card = _card,
                     active_check = (function(other)
+                        -- huge hack for Cryptid Code cards: since their `can_use` method might check for highlighted consumeables, we need to temporarily add the card inside the highlighted table to satisfy the drag while drawing the drag_target
+                        if Cryptid and _card.ability.set == 'Code' and _card.area == G.consumeables then
+                            _card.area.highlighted[#_card.area.highlighted + 1] = _card
+                            local can_use = other:can_use_consumeable()
+                            remove_highlighted_card_from_area(_card, _card.area)
+                            for i = #_card.area.highlighted, 1, -1 do
+                                if _card.area.highlighted[i] == _card then
+                                    table.remove(_card.area.highlighted, i)
+                                    break
+                                end
+                            end
+                            return can_use
+                        end
                         return other:can_use_consumeable()
                     end),
                     release_func = (function(other)
-                        if other:can_use_consumeable() then
+                        -- this is lazy but if we're here we _should_ be good anyway
+                        if Cryptid and other.ability.set == 'Code' then
+                            G.FUNCS.use_card({ config = { ref_table = other } })
+                        elseif other:can_use_consumeable() then
                             G.FUNCS.use_card({ config = { ref_table = other } })
                             if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.button_listen == 'use_card' then
                                 G.FUNCS.tut_next()
@@ -178,6 +194,15 @@ function create_drag_target_from_card(_card)
                     end)
                 })
             end
+        end
+    end
+end
+
+function remove_highlighted_card_from_area(card, area)
+    for i = #area.highlighted, 1, -1 do
+        if area.highlighted[i] == card then
+            table.remove(card.area.highlighted, i)
+            break
         end
     end
 end
