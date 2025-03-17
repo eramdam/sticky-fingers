@@ -47,6 +47,7 @@ G.FUNCS.can_select_card = base_can_select_card
 
 G.FUNCS.sticky_can_select_card = function(_card)
   if Cryptid then
+    -- https://github.com/MathIsFun0/Cryptid/blob/main/lib/overrides.lua#L1171-L1182
     if
         (_card.ability.name == "cry-Negative Joker" and _card.ability.extra >= 1)
         or (_card.ability.name == "cry-soccer" and _card.ability.extra.holygrail >= 1)
@@ -61,6 +62,7 @@ G.FUNCS.sticky_can_select_card = function(_card)
   end
 end
 
+-- Taken from https://github.com/MathIsFun0/Cryptid/blob/main/items/code.lua#L5141
 G.FUNCS.cryptid_can_reserve_card = function(e)
   if Cryptid then
     local c1 = e
