@@ -5,16 +5,17 @@ function create_drag_target_from_card(_card)
             S_buy_and_use = Moveable { T = { x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w - 0.1, h = 4.5 } },
             C_sell = Moveable { T = { x = G.jokers.T.x, y = G.jokers.T.y - 0.2, w = G.jokers.T.w, h = G.jokers.T.h + 0.6 } },
             J_sell = Moveable { T = { x = G.consumeables.T.x + 0.3, y = G.consumeables.T.y - 0.2, w = G.consumeables.T.w - 0.3, h = G.consumeables.T.h + 0.6 } },
+            J_sell_vanilla = Moveable { T = { x = G.consumeables.T.x + 0.3, y = G.consumeables.T.y - 0.2, w = G.consumeables.T.w - 0.3, h = G.consumeables.T.h + 0.6 } },
             C_use = Moveable { T = { x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w - 0.1, h = 4.5 } },
             P_select = Moveable { T = { x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w + 2, h = G.play.T.h + 1 } },
-            -- for Cryptid code cards
-            P_pull = Moveable { T = { x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w - 2, h = G.play.T.h + 1 } },
+            -- for Cryptid code cards and Pokermon item/energy cards (middle center)
+            P_save = Moveable { T = { x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w, h = G.play.T.h + 1 } },
         }
 
         if DTM.config.vanilla_joker_sell == false then
             G.DRAG_TARGETS.J_sell = Moveable { T = { x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w - 0.1, h = 4.5 } }
         else
-            G.DRAG_TARGETS.J_sell = Moveable { T = { x = G.consumeables.T.x + 0.3, y = G.consumeables.T.y - 0.2, w = G.consumeables.T.w - 0.3, h = G.consumeables.T.h + 0.6 } }
+            G.DRAG_TARGETS.J_sell = G.DRAG_TARGETS.J_sell_vanilla
         end
 
         if _card.area and (_card.area == G.shop_jokers or _card.area == G.shop_vouchers or _card.area == G.shop_booster) then
@@ -79,15 +80,32 @@ function create_drag_target_from_card(_card)
             -- Cryptid code cards
             if Cryptid and _card.ability.consumeable and _card.ability.set == 'Code' then
                 drag_target({
-                    cover = G.DRAG_TARGETS.P_pull,
+                    cover = G.DRAG_TARGETS.P_save,
                     colour = adjust_alpha(G.C.GREEN, 0.9),
                     text = { localize('b_pull') },
                     card = _card,
                     active_check = (function(other)
-                        return G.FUNCS.sticky_can_reserve_card(other)
+                        return G.FUNCS.cryptid_can_reserve_card(other)
                     end),
                     release_func = (function(other)
-                        if G.FUNCS.sticky_can_reserve_card(other) then
+                        if G.FUNCS.cryptid_can_reserve_card(other) then
+                            G.FUNCS.reserve_card({ config = { ref_table = other } })
+                        end
+                    end),
+                })
+            end
+            -- Pokermon item/energy cards
+            if pokermon and _card.ability.consumeable and (_card.ability.set == 'Energy' or _card.ability.set == 'Item') then
+                drag_target({
+                    cover = G.DRAG_TARGETS.P_save,
+                    colour = adjust_alpha(G.ARGS.LOC_COLOURS.pink, 0.9),
+                    text = { localize('b_save') },
+                    card = _card,
+                    active_check = (function(other)
+                        return #G.consumeables.cards < G.consumeables.config.card_limit
+                    end),
+                    release_func = (function(other)
+                        if #G.consumeables.cards < G.consumeables.config.card_limit then
                             G.FUNCS.reserve_card({ config = { ref_table = other } })
                         end
                     end),

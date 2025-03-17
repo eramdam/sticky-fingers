@@ -61,7 +61,7 @@ G.FUNCS.sticky_can_select_card = function(_card)
   end
 end
 
-G.FUNCS.sticky_can_reserve_card = function(e)
+G.FUNCS.cryptid_can_reserve_card = function(e)
   if Cryptid then
     local c1 = e
     return #G.consumeables.cards
