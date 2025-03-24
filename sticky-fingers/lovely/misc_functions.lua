@@ -1,6 +1,3 @@
-debug_current_card = {}
-
-
 local sticky_fingers_drag_areas_mods = {
     -- Prism's double cards from hand. "Switch" area.
     {
@@ -162,9 +159,8 @@ local find_matching_areas_for_card = function(_card)
     return matches
 end
 
-function create_drag_target_from_card(_card2)
+function create_drag_target_from_card(_card)
     if _card and G.STAGE == G.STAGES.RUN then
-        debug_current_card = _card;
         G.DRAG_TARGETS = G.DRAG_TARGETS or {
             S_buy = Moveable { T = { x = G.jokers.T.x, y = G.jokers.T.y - 0.1, w = G.consumeables.T.x + G.consumeables.T.w - G.jokers.T.x, h = G.jokers.T.h + 0.6 } },
             S_buy_and_use = Moveable { T = { x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w - 0.1, h = 4.5 } },
