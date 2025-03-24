@@ -19,8 +19,10 @@ function create_drag_target_from_card(_card)
         end
 
         if _card.area and (_card.area == G.shop_jokers or _card.area == G.shop_vouchers or _card.area == G.shop_booster) then
-            local buy_loc = copy_table(localize((_card.area == G.shop_vouchers and 'ml_redeem_target') or
-                (_card.area == G.shop_booster and 'ml_open_target') or 'ml_buy_target'))
+            local is_booster = _card.ability.set == 'Booster'
+            local is_voucher = _card.ability.set == 'Voucher'
+            local buy_loc = copy_table(localize((is_voucher and 'ml_redeem_target') or
+                (is_booster and 'ml_open_target') or 'ml_buy_target'))
             buy_loc[#buy_loc + 1] = '$' .. _card.cost
             drag_target({
                 cover = G.DRAG_TARGETS.S_buy,
@@ -31,7 +33,7 @@ function create_drag_target_from_card(_card)
                     return G.FUNCS.can_buy(other)
                 end),
                 release_func = (function(other)
-                    if other.area == G.shop_jokers and G.FUNCS.can_buy(other) then
+                    if other.ability.set == 'Joker' and G.FUNCS.can_buy(other) then
                         if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.button_listen == 'buy_from_shop' then
                             G.FUNCS.tut_next()
                         end
@@ -42,9 +44,9 @@ function create_drag_target_from_card(_card)
                             }
                         })
                         return
-                    elseif other.area == G.shop_vouchers and G.FUNCS.can_buy(other) then
+                    elseif other.ability.set == 'Voucher' and G.FUNCS.can_buy(other) then
                         G.FUNCS.use_card({ config = { ref_table = other } })
-                    elseif other.area == G.shop_booster and G.FUNCS.can_buy(other) then
+                    elseif other.ability.set == 'Booster' and G.FUNCS.can_buy(other) then
                         G.FUNCS.use_card({ config = { ref_table = other } })
                     end
                 end)
