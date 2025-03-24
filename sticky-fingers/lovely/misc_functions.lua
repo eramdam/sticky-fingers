@@ -48,11 +48,13 @@ function create_drag_target_from_card(_card)
                         G.FUNCS.use_card({ config = { ref_table = other } })
                     elseif other.ability.set == 'Booster' and G.FUNCS.can_buy(other) then
                         G.FUNCS.use_card({ config = { ref_table = other } })
-                    elseif other.ability.set == 'Tag' and G.FUNCS.can_buy(other) then
-                        G.FUNCS.use_card({ config = { ref_table = other } })
-                        -- Welp, I sure hope this doesn't crash anything
                     elseif G.FUNCS.can_buy(other) then
-                        G.FUNCS.use_card({ config = { ref_table = other } })
+                        G.FUNCS.buy_from_shop({
+                            config = {
+                                ref_table = other,
+                                id = 'buy'
+                            }
+                        })
                     end
                 end)
             })
@@ -172,7 +174,6 @@ function create_drag_target_from_card(_card)
         -- Cines (Reverie) cards inside their own area.
         if _card.area == G.cine_quests then
             if _card.ability.set == 'Cine' then
-                print(inspect(_card.ability))
                 -- Cine sell drag target
                 local sell_loc = copy_table(localize('ml_sell_target'))
                 sell_loc[#sell_loc + 1] = '$' .. (_card.facing == 'back' and '?' or _card.sell_cost)
