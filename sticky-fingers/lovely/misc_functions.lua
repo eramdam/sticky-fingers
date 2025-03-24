@@ -1,5 +1,170 @@
-function create_drag_target_from_card(_card)
+debug_current_card = {}
+
+
+local sticky_fingers_drag_areas_mods = {
+    -- Prism's double cards from hand. "Switch" area.
+    {
+        should_draw = function(_card)
+            return _card.area == G.hand and G.PRISM and _card.ability.set == 'Enhanced' and
+                _card.ability.name == 'm_prism_double'
+        end,
+        primary_colour = function(_card)
+            return G.C.RED
+        end,
+        text = function(_card)
+            return { localize('prism_switch') }
+        end,
+        active_check = (function(_card)
+            return true
+        end),
+        cover = function(other)
+            return G.DRAG_TARGETS.P_select
+        end,
+        release_func = function(other)
+            G.FUNCS.switch_button({
+                config = {
+                    ref_table = other,
+                }
+            })
+        end
+    },
+    -- Cryptid code cards inside packs. "Pull" area.
+    {
+        should_draw = function(_card)
+            return _card.area and _card.area == G.pack_cards and Cryptid and _card.ability.consumeable and
+                _card.ability.set == 'Code'
+        end,
+        cover = function()
+            return G.DRAG_TARGETS.P_save
+        end,
+        primary_colour = function(_card)
+            return G.C.GREEN
+        end,
+        text = function(_card)
+            return { localize('b_pull') }
+        end,
+        active_check = (function(other)
+            local temp_config = { config = { ref_table = other } }
+            G.FUNCS.can_reserve_card(temp_config)
+            return temp_config.config.button == 'reserve_card'
+        end),
+        release_func = (function(other)
+            G.FUNCS.reserve_card({ config = { ref_table = other } })
+        end),
+    },
+    -- Pokermon item/energy cards inside packs. "Save" area.
+    {
+        should_draw = function(_card)
+            return _card.area and _card.area == G.pack_cards and pokermon and _card.ability.consumeable and
+                (_card.ability.set == 'Energy' or _card.ability.set == 'Item')
+        end,
+        cover = function()
+            return G.DRAG_TARGETS.P_save
+        end,
+        primary_colour = function(_card)
+            return G.ARGS.LOC_COLOURS.pink
+        end,
+        text = function(_card)
+            return { localize('b_save') }
+        end,
+        active_check = (function(other)
+            return #G.consumeables.cards < G.consumeables.config.card_limit
+        end),
+        release_func = (function(other)
+            if #G.consumeables.cards < G.consumeables.config.card_limit then
+                G.FUNCS.reserve_card({ config = { ref_table = other } })
+            end
+        end),
+    },
+    -- Cine (Reverie) cards inside packs. "Select" area.
+    {
+        should_draw = function(_card)
+            return _card.area and _card.area == G.pack_cards and _card.ability.consumeable and
+                _card.ability.set == 'Cine'
+        end,
+        cover = function()
+            return G.DRAG_TARGETS.P_select
+        end,
+        primary_colour = function(_card)
+            return G.C.GREEN
+        end,
+        text = function(_card)
+            return { localize('b_select') }
+        end,
+        active_check = (function(other)
+            return G.FUNCS.sticky_can_select_card(other)
+        end),
+        release_func = (function(other)
+            if G.FUNCS.sticky_can_select_card(other) then
+                G.FUNCS.use_card({ config = { ref_table = other } })
+            end
+        end),
+    },
+    -- 'Cine' (Reverie) cards inside their own area. "Sell" area.
+    {
+        should_draw = function(_card)
+            return _card.area and _card.area == G.cine_quests and _card.ability.consumeable and
+                _card.ability.set == 'Cine'
+        end,
+        cover = function()
+            return G.DRAG_TARGETS.C_sell
+        end,
+        primary_colour = function(_card)
+            return G.C.GOLD
+        end,
+        text = function(_card)
+            local sell_loc = copy_table(localize('ml_sell_target'))
+            sell_loc[#sell_loc + 1] = '$' .. (_card.facing == 'back' and '?' or _card.sell_cost)
+            return sell_loc
+        end,
+        active_check = (function(other)
+            return other:can_sell_card()
+        end),
+        release_func = (function(other)
+            G.FUNCS.sell_card { config = { ref_table = other } }
+        end),
+    },
+    -- 'Cine' (Reverie) cards inside their own area. "Use" area.
+    {
+        should_draw = function(_card)
+            return _card.area and _card.area == G.cine_quests and _card.ability.consumeable and
+                _card.ability.set == 'Cine'
+        end,
+        cover = function()
+            return G.DRAG_TARGETS.J_sell_vanilla
+        end,
+        primary_colour = function(_card)
+            return G.C.RED
+        end,
+        text = function(_card)
+            return { localize('b_use') }
+        end,
+        active_check = (function(other)
+            return other:can_use_consumeable()
+        end),
+        release_func = (function(other)
+            G.FUNCS.use_card({ config = { ref_table = other } })
+        end),
+    },
+}
+
+local find_matching_areas_for_card = function(_card)
+    local matches = {}
+    for _, value in ipairs(sticky_fingers_drag_areas_mods) do
+        if value.should_draw(_card) then
+            matches[#matches + 1] = value
+        end
+    end
+
+    if #matches == 0 then
+        return nil
+    end
+    return matches
+end
+
+function create_drag_target_from_card(_card2)
     if _card and G.STAGE == G.STAGES.RUN then
+        debug_current_card = _card;
         G.DRAG_TARGETS = G.DRAG_TARGETS or {
             S_buy = Moveable { T = { x = G.jokers.T.x, y = G.jokers.T.y - 0.1, w = G.consumeables.T.x + G.consumeables.T.w - G.jokers.T.x, h = G.jokers.T.h + 0.6 } },
             S_buy_and_use = Moveable { T = { x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w - 0.1, h = 4.5 } },
@@ -86,58 +251,6 @@ function create_drag_target_from_card(_card)
         end
 
         if _card.area and (_card.area == G.pack_cards) then
-            -- Cryptid code cards inside packs
-            if Cryptid and _card.ability.consumeable and _card.ability.set == 'Code' then
-                drag_target({
-                    cover = G.DRAG_TARGETS.P_save,
-                    colour = adjust_alpha(G.C.GREEN, 0.9),
-                    text = { localize('b_pull') },
-                    card = _card,
-                    active_check = (function(other)
-                        return G.FUNCS.cryptid_can_reserve_card(other)
-                    end),
-                    release_func = (function(other)
-                        if G.FUNCS.cryptid_can_reserve_card(other) then
-                            G.FUNCS.reserve_card({ config = { ref_table = other } })
-                        end
-                    end),
-                })
-            end
-            -- Pokermon item/energy cards inside packs
-            if pokermon and _card.ability.consumeable and (_card.ability.set == 'Energy' or _card.ability.set == 'Item') then
-                drag_target({
-                    cover = G.DRAG_TARGETS.P_save,
-                    colour = adjust_alpha(G.ARGS.LOC_COLOURS.pink, 0.9),
-                    text = { localize('b_save') },
-                    card = _card,
-                    active_check = (function(other)
-                        return #G.consumeables.cards < G.consumeables.config.card_limit
-                    end),
-                    release_func = (function(other)
-                        if #G.consumeables.cards < G.consumeables.config.card_limit then
-                            G.FUNCS.reserve_card({ config = { ref_table = other } })
-                        end
-                    end),
-                })
-            end
-            -- Cine (Reverie) cards inside packs
-            if _card.ability.consumeable and _card.ability.set == 'Cine' then
-                drag_target({
-                    cover = G.DRAG_TARGETS.P_select,
-                    colour = adjust_alpha(G.C.GREEN, 0.9),
-                    text = { localize('b_select') },
-                    card = _card,
-                    active_check = (function(other)
-                        return G.FUNCS.sticky_can_select_card(other)
-                    end),
-                    release_func = (function(other)
-                        if G.FUNCS.sticky_can_select_card(other) then
-                            G.FUNCS.use_card({ config = { ref_table = other } })
-                        end
-                    end)
-                })
-            end
-
             if _card.ability.consumeable and not (_card.ability.set == 'Planet' or _card.ability.set == 'Cine') then
                 drag_target({
                     cover = G.DRAG_TARGETS.C_use,
@@ -165,42 +278,6 @@ function create_drag_target_from_card(_card)
                     release_func = (function(other)
                         if G.FUNCS.sticky_can_select_card(other) then
                             G.FUNCS.use_card({ config = { ref_table = other } })
-                        end
-                    end)
-                })
-            end
-        end
-
-        -- 'Cine' (Reverie) cards inside their own area.
-        if _card.area == G.cine_quests then
-            if _card.ability.set == 'Cine' then
-                -- Cine sell drag target
-                local sell_loc = copy_table(localize('ml_sell_target'))
-                sell_loc[#sell_loc + 1] = '$' .. (_card.facing == 'back' and '?' or _card.sell_cost)
-                drag_target({
-                    cover = G.DRAG_TARGETS.C_sell,
-                    colour = adjust_alpha(G.C.GOLD, 0.9),
-                    text = sell_loc,
-                    card = _card,
-                    active_check = (function(other)
-                        return other:can_sell_card()
-                    end),
-                    release_func = (function(other)
-                        G.FUNCS.sell_card { config = { ref_table = other } }
-                    end)
-                })
-                drag_target({
-                    cover = G.DRAG_TARGETS.J_sell_vanilla,
-                    colour = adjust_alpha(G.C.RED, 0.9),
-                    text = { localize('b_use') },
-                    card = _card,
-                    active_check = (function(other)
-                        return other:can_use_consumeable()
-                    end),
-                    release_func = (function(other)
-                        G.FUNCS.use_card({ config = { ref_table = other } })
-                        if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.button_listen == 'use_card' then
-                            G.FUNCS.tut_next()
                         end
                     end)
                 })
@@ -253,24 +330,17 @@ function create_drag_target_from_card(_card)
             end
         end
 
-        if _card.area == G.hand then
-            -- Prism's double cards from hand
-            if G.PRISM and _card.ability.set == 'Enhanced' and _card.ability.name == 'm_prism_double' then
+        local drag_targets_to_draw = find_matching_areas_for_card(_card)
+
+        if drag_targets_to_draw then
+            for _, single_drag_target in pairs(drag_targets_to_draw) do
                 drag_target({
-                    cover = G.DRAG_TARGETS.P_select,
-                    colour = adjust_alpha(G.C.RED, 0.9),
-                    text = { localize('prism_switch') },
-                    card = _card,
-                    active_check = (function(other)
-                        return true
-                    end),
-                    release_func = (function(other)
-                        G.FUNCS.switch_button({
-                            config = {
-                                ref_table = other,
-                            }
-                        })
-                    end)
+                    cover        = single_drag_target.cover(_card),
+                    colour       = single_drag_target.primary_colour(_card),
+                    text         = single_drag_target.text(_card),
+                    card         = _card,
+                    active_check = single_drag_target.active_check,
+                    release_func = single_drag_target.release_func,
                 })
             end
         end

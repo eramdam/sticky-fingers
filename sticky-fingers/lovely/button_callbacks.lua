@@ -65,15 +65,6 @@ G.FUNCS.sticky_can_select_card = function(_card)
   end
 end
 
--- Taken from https://github.com/MathIsFun0/Cryptid/blob/main/items/code.lua#L5141
-G.FUNCS.cryptid_can_reserve_card = function(e)
-  if Cryptid then
-    local c1 = e
-    return #G.consumeables.cards
-        < G.consumeables.config.card_limit + (Cryptid.safe_get(c1, "edition", "negative") and 1 or 0)
-  end
-end
-
 --Checks if the cost of a non voucher card is greater than what the player can afford and changes the
 --buy button visuals accordingly
 --
