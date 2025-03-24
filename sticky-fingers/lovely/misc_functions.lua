@@ -171,7 +171,7 @@ function create_drag_target_from_card(_card)
             end
         end
 
-        -- Cines (Reverie) cards inside their own area.
+        -- 'Cine' (Reverie) cards inside their own area.
         if _card.area == G.cine_quests then
             if _card.ability.set == 'Cine' then
                 -- Cine sell drag target
