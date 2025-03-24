@@ -252,6 +252,28 @@ function create_drag_target_from_card(_card)
                 })
             end
         end
+
+        if _card.area == G.hand then
+            -- Prism's double cards from hand
+            if G.PRISM and _card.ability.set == 'Enhanced' and _card.ability.name == 'm_prism_double' then
+                drag_target({
+                    cover = G.DRAG_TARGETS.P_select,
+                    colour = adjust_alpha(G.C.RED, 0.9),
+                    text = { localize('prism_switch') },
+                    card = _card,
+                    active_check = (function(other)
+                        return true
+                    end),
+                    release_func = (function(other)
+                        G.FUNCS.switch_button({
+                            config = {
+                                ref_table = other,
+                            }
+                        })
+                    end)
+                })
+            end
+        end
     end
 end
 
