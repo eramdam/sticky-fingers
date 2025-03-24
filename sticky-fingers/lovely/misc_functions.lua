@@ -77,7 +77,7 @@ function create_drag_target_from_card(_card)
         end
 
         if _card.area and (_card.area == G.pack_cards) then
-            -- Cryptid code cards
+            -- Cryptid code cards inside packs
             if Cryptid and _card.ability.consumeable and _card.ability.set == 'Code' then
                 drag_target({
                     cover = G.DRAG_TARGETS.P_save,
@@ -94,7 +94,7 @@ function create_drag_target_from_card(_card)
                     end),
                 })
             end
-            -- Pokermon item/energy cards
+            -- Pokermon item/energy cards inside packs
             if pokermon and _card.ability.consumeable and (_card.ability.set == 'Energy' or _card.ability.set == 'Item') then
                 drag_target({
                     cover = G.DRAG_TARGETS.P_save,
@@ -111,7 +111,25 @@ function create_drag_target_from_card(_card)
                     end),
                 })
             end
-            if _card.ability.consumeable and not (_card.ability.set == 'Planet') then
+            -- Cine (Reverie) cards inside packs
+            if _card.ability.consumeable and _card.ability.set == 'Cine' then
+                drag_target({
+                    cover = G.DRAG_TARGETS.P_select,
+                    colour = adjust_alpha(G.C.GREEN, 0.9),
+                    text = { localize('b_select') },
+                    card = _card,
+                    active_check = (function(other)
+                        return G.FUNCS.sticky_can_select_card(other)
+                    end),
+                    release_func = (function(other)
+                        if G.FUNCS.sticky_can_select_card(other) then
+                            G.FUNCS.use_card({ config = { ref_table = other } })
+                        end
+                    end)
+                })
+            end
+
+            if _card.ability.consumeable and not (_card.ability.set == 'Planet' or _card.ability.set == 'Cine') then
                 drag_target({
                     cover = G.DRAG_TARGETS.C_use,
                     colour = adjust_alpha(G.C.RED, 0.9),
@@ -138,6 +156,43 @@ function create_drag_target_from_card(_card)
                     release_func = (function(other)
                         if G.FUNCS.sticky_can_select_card(other) then
                             G.FUNCS.use_card({ config = { ref_table = other } })
+                        end
+                    end)
+                })
+            end
+        end
+
+        -- Cines (Reverie) cards inside their own area.
+        if _card.area == G.cine_quests then
+            if _card.ability.set == 'Cine' then
+                print(inspect(_card.ability))
+                -- Cine sell drag target
+                local sell_loc = copy_table(localize('ml_sell_target'))
+                sell_loc[#sell_loc + 1] = '$' .. (_card.facing == 'back' and '?' or _card.sell_cost)
+                drag_target({
+                    cover = G.DRAG_TARGETS.C_sell,
+                    colour = adjust_alpha(G.C.GOLD, 0.9),
+                    text = sell_loc,
+                    card = _card,
+                    active_check = (function(other)
+                        return other:can_sell_card()
+                    end),
+                    release_func = (function(other)
+                        G.FUNCS.sell_card { config = { ref_table = other } }
+                    end)
+                })
+                drag_target({
+                    cover = G.DRAG_TARGETS.J_sell_vanilla,
+                    colour = adjust_alpha(G.C.RED, 0.9),
+                    text = { localize('b_use') },
+                    card = _card,
+                    active_check = (function(other)
+                        return other:can_use_consumeable()
+                    end),
+                    release_func = (function(other)
+                        G.FUNCS.use_card({ config = { ref_table = other } })
+                        if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.button_listen == 'use_card' then
+                            G.FUNCS.tut_next()
                         end
                     end)
                 })
