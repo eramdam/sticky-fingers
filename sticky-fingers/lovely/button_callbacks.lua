@@ -46,6 +46,9 @@ end
 G.FUNCS.can_select_card = base_can_select_card
 
 G.FUNCS.sticky_can_select_card = function(_card)
+  if Reverie and _card.ability.set == 'Cine' then
+    return (_card.edition and _card.edition.negative) or #G.cine_quests.cards < G.cine_quests.config.card_limit
+  end
   if Cryptid then
     -- https://github.com/MathIsFun0/Cryptid/blob/main/lib/overrides.lua#L1171-L1182
     if
@@ -59,15 +62,6 @@ G.FUNCS.sticky_can_select_card = function(_card)
     end
   else
     return base_can_select_card(_card)
-  end
-end
-
--- Taken from https://github.com/MathIsFun0/Cryptid/blob/main/items/code.lua#L5141
-G.FUNCS.cryptid_can_reserve_card = function(e)
-  if Cryptid then
-    local c1 = e
-    return #G.consumeables.cards
-        < G.consumeables.config.card_limit + (Cryptid.safe_get(c1, "edition", "negative") and 1 or 0)
   end
 end
 
