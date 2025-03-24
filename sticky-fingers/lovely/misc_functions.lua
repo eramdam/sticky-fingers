@@ -48,6 +48,8 @@ function create_drag_target_from_card(_card)
                         G.FUNCS.use_card({ config = { ref_table = other } })
                     elseif other.ability.set == 'Booster' and G.FUNCS.can_buy(other) then
                         G.FUNCS.use_card({ config = { ref_table = other } })
+                    elseif other.ability.set == 'Tag' and G.FUNCS.can_buy(other) then
+                        G.FUNCS.use_card({ config = { ref_table = other } })
                     end
                 end)
             })
