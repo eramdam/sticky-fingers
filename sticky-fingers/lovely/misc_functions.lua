@@ -50,6 +50,9 @@ function create_drag_target_from_card(_card)
                         G.FUNCS.use_card({ config = { ref_table = other } })
                     elseif other.ability.set == 'Tag' and G.FUNCS.can_buy(other) then
                         G.FUNCS.use_card({ config = { ref_table = other } })
+                        -- Welp, I sure hope this doesn't crash anything
+                    elseif G.FUNCS.can_buy(other) then
+                        G.FUNCS.use_card({ config = { ref_table = other } })
                     end
                 end)
             })
