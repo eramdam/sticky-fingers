@@ -103,20 +103,36 @@ function create_drag_target_from_card(_card)
                     end)
                 })
             else
-                drag_target({
-                    cover = G.DRAG_TARGETS.P_select,
-                    colour = adjust_alpha(G.C.GREEN, 0.9),
-                    text = { localize('b_select') },
-                    card = _card,
-                    active_check = (function(other)
-                        return G.FUNCS.sticky_can_select_card(other)
-                    end),
-                    release_func = (function(other)
-                        if G.FUNCS.sticky_can_select_card(other) then
-                            G.FUNCS.use_card({ config = { ref_table = other } })
-                        end
-                    end)
-                })
+                -- Bunco: Blind 'cards' in packs
+                if BUNCOMOD and _card.ability and _card.ability.blind_card then
+                    drag_target({
+                        cover = G.DRAG_TARGETS.P_select,
+                        colour = adjust_alpha(G.C.GREEN, 0.9),
+                        text = { localize('b_select') },
+                        card = _card,
+                        active_check = (function(other)
+                            return true
+                        end),
+                        release_func = (function(other)
+                            G.FUNCS.use_blind_card({ config = { ref_table = other } })
+                        end)
+                    })
+                else
+                    drag_target({
+                        cover = G.DRAG_TARGETS.P_select,
+                        colour = adjust_alpha(G.C.GREEN, 0.9),
+                        text = { localize('b_select') },
+                        card = _card,
+                        active_check = (function(other)
+                            return G.FUNCS.sticky_can_select_card(other)
+                        end),
+                        release_func = (function(other)
+                            if G.FUNCS.sticky_can_select_card(other) then
+                                G.FUNCS.use_card({ config = { ref_table = other } })
+                            end
+                        end)
+                    })
+                end
             end
         end
 
