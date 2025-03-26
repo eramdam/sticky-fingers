@@ -136,22 +136,24 @@ function create_drag_target_from_card(_card)
             end
         end
 
-        if _card.area and (_card.area == G.jokers or _card.area == G.consumeables) then
-            local sell_loc = copy_table(localize('ml_sell_target'))
-            sell_loc[#sell_loc + 1] = '$' .. (_card.facing == 'back' and '?' or _card.sell_cost)
-            drag_target({
-                cover = _card.area == G.consumeables and G.DRAG_TARGETS.C_sell or G.DRAG_TARGETS.J_sell,
-                colour = adjust_alpha(G.C.GOLD, 0.9),
-                text = sell_loc,
-                card = _card,
-                active_check = (function(other)
-                    return other:can_sell_card()
-                end),
-                release_func = (function(other)
-                    G.FUNCS.sell_card { config = { ref_table = other } }
-                end)
-            })
-            if _card.area == G.consumeables then
+        if _card.area and (_card.area == G.jokers or _card.area == G.consumeables or _card.area == G.hand) then
+            if _card.area == G.jokers or _card.area == G.consumeables then
+                local sell_loc = copy_table(localize('ml_sell_target'))
+                sell_loc[#sell_loc + 1] = '$' .. (_card.facing == 'back' and '?' or _card.sell_cost)
+                drag_target({
+                    cover = _card.area == G.consumeables and G.DRAG_TARGETS.C_sell or G.DRAG_TARGETS.J_sell,
+                    colour = adjust_alpha(G.C.GOLD, 0.9),
+                    text = sell_loc,
+                    card = _card,
+                    active_check = (function(other)
+                        return other:can_sell_card()
+                    end),
+                    release_func = (function(other)
+                        G.FUNCS.sell_card { config = { ref_table = other } }
+                    end)
+                })
+            end
+            if (_card.area == G.hand or _card.area == G.consumeables) and _card.ability and _card.ability.consumeable then
                 drag_target({
                     cover = G.DRAG_TARGETS.C_use,
                     colour = adjust_alpha(G.C.RED, 0.9),
