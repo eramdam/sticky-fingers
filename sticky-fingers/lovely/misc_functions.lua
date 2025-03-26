@@ -10,6 +10,8 @@ function create_drag_target_from_card(_card)
             P_select = Moveable { T = { x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w + 2, h = G.play.T.h + 1 } },
             -- for Cryptid code cards and Pokermon item/energy cards (middle center)
             P_save = Moveable { T = { x = G.play.T.x, y = G.play.T.y - 2, w = G.play.T.w, h = G.play.T.h + 1 } },
+            -- Prism's "double cards" have a "Switch" button
+            P_switch = Moveable { T = { x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w - 0.1, h = 4.5 } },
         }
 
         if DTM.config.vanilla_joker_sell == false then
@@ -189,7 +191,7 @@ function create_drag_target_from_card(_card)
             _card.ability.name == 'm_prism_double' then
             -- "Switch" area.
             drag_target({
-                cover        = G.DRAG_TARGETS.P_select,
+                cover        = G.DRAG_TARGETS.P_switch,
                 colour       = adjust_alpha(G.C.RED, 0.9),
                 text         = { localize('prism_switch') },
                 card         = _card,
