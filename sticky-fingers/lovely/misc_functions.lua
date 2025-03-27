@@ -34,10 +34,10 @@ function create_drag_target_from_card(_card)
                 text = buy_loc,
                 card = _card,
                 active_check = (function(other)
-                    return G.FUNCS.can_buy(other)
+                    return sticky_can_buy(other)
                 end),
                 release_func = (function(other)
-                    if other.ability.set == 'Joker' and G.FUNCS.can_buy(other) then
+                    if other.ability.set == 'Joker' and sticky_can_buy(other) then
                         if G.OVERLAY_TUTORIAL and G.OVERLAY_TUTORIAL.button_listen == 'buy_from_shop' then
                             G.FUNCS.tut_next()
                         end
@@ -48,11 +48,11 @@ function create_drag_target_from_card(_card)
                             }
                         })
                         return
-                    elseif other.ability.set == 'Voucher' and G.FUNCS.can_buy(other) then
+                    elseif other.ability.set == 'Voucher' and sticky_can_buy(other) then
                         G.FUNCS.use_card({ config = { ref_table = other } })
-                    elseif other.ability.set == 'Booster' and G.FUNCS.can_buy(other) then
+                    elseif other.ability.set == 'Booster' and sticky_can_buy(other) then
                         G.FUNCS.use_card({ config = { ref_table = other } })
-                    elseif G.FUNCS.can_buy(other) then
+                    elseif sticky_can_buy(other) then
                         G.FUNCS.buy_from_shop({
                             config = {
                                 ref_table = other,
@@ -63,7 +63,7 @@ function create_drag_target_from_card(_card)
                 end)
             })
 
-            if G.FUNCS.can_buy_and_use(_card) then
+            if sticky_can_buy_and_use(_card) then
                 local buy_use_loc = copy_table(localize('ml_buy_and_use_target'))
                 buy_use_loc[#buy_use_loc + 1] = '$' .. _card.cost
                 drag_target({
@@ -72,10 +72,10 @@ function create_drag_target_from_card(_card)
                     text = buy_use_loc,
                     card = _card,
                     active_check = (function(other)
-                        return G.FUNCS.can_buy_and_use(other)
+                        return sticky_can_buy_and_use(other)
                     end),
                     release_func = (function(other)
-                        if G.FUNCS.can_buy_and_use(other) then
+                        if sticky_can_buy_and_use(other) then
                             G.FUNCS.buy_from_shop({
                                 config = {
                                     ref_table = other,
@@ -115,10 +115,12 @@ function create_drag_target_from_card(_card)
                         text = { localize('b_select') },
                         card = _card,
                         active_check = (function(other)
-                            return true
+                            return sticky_can_use_blind_card(other)
                         end),
                         release_func = (function(other)
-                            G.FUNCS.use_blind_card({ config = { ref_table = other } })
+                            if sticky_can_use_blind_card(other) then
+                                G.FUNCS.use_blind_card({ config = { ref_table = other } })
+                            end
                         end)
                     })
                 else
@@ -128,10 +130,10 @@ function create_drag_target_from_card(_card)
                         text = { localize('b_select') },
                         card = _card,
                         active_check = (function(other)
-                            return G.FUNCS.sticky_can_select_card(other)
+                            return sticky_can_select_card(other)
                         end),
                         release_func = (function(other)
-                            if G.FUNCS.sticky_can_select_card(other) then
+                            if sticky_can_select_card(other) then
                                 G.FUNCS.use_card({ config = { ref_table = other } })
                             end
                         end)
@@ -220,12 +222,12 @@ function create_drag_target_from_card(_card)
                 text         = { localize('b_pull') },
                 card         = _card,
                 active_check = function(other)
-                    local temp_config = { config = { ref_table = other } }
-                    G.FUNCS.can_reserve_card(temp_config)
-                    return temp_config.config.button == 'reserve_card'
+                    return sticky_can_reserve_card(other)
                 end,
                 release_func = function(other)
-                    G.FUNCS.reserve_card({ config = { ref_table = other } })
+                    if sticky_can_reserve_card(other) then
+                        G.FUNCS.reserve_card({ config = { ref_table = other } })
+                    end
                 end,
             })
         end
@@ -259,10 +261,10 @@ function create_drag_target_from_card(_card)
                 text         = { localize('b_select') },
                 card         = _card,
                 active_check = (function(other)
-                    return G.FUNCS.sticky_can_select_card(other)
+                    return sticky_can_select_card(other)
                 end),
                 release_func = (function(other)
-                    if G.FUNCS.sticky_can_select_card(other) then
+                    if sticky_can_select_card(other) then
                         G.FUNCS.use_card({ config = { ref_table = other } })
                     end
                 end),
@@ -320,4 +322,34 @@ function is_element_in_table(element, table)
         end
     end
     return false
+end
+
+sticky_can_use_blind_card = function(_card)
+    local temp_config = { UIBox = { states = { visible = false } }, config = { ref_table = _card } }
+    G.FUNCS.can_use_blind_card(temp_config)
+    return temp_config.config.button ~= nil;
+end
+
+sticky_can_reserve_card = function(_card)
+    local temp_config = { UIBox = { states = { visible = false } }, config = { ref_table = _card } }
+    G.FUNCS.can_reserve_card(temp_config)
+    return temp_config.config.button ~= nil;
+end
+
+sticky_can_select_card = function(_card)
+    local temp_config = { UIBox = { states = { visible = false } }, config = { ref_table = _card } }
+    G.FUNCS.can_select_card(temp_config)
+    return temp_config.config.button ~= nil;
+end
+
+sticky_can_buy = function(_card)
+    local temp_config = { UIBox = { states = { visible = false } }, config = { ref_table = _card } }
+    G.FUNCS.can_buy(temp_config)
+    return temp_config.config.button ~= nil;
+end
+
+sticky_can_buy_and_use = function(_card)
+    local temp_config = { UIBox = { states = { visible = false } }, config = { ref_table = _card } }
+    G.FUNCS.can_buy_and_use(temp_config)
+    return temp_config.config.button ~= nil;
 end
