@@ -89,9 +89,17 @@ function create_drag_target_from_card(_card)
             end
         end
 
+        local has_select_drag_area = false
+        local is_consumeable_card_in_crazy_reverie_pack = Reverie and
+            (Reverie.is_cine_or_reverie(_card) or Reverie.find_used_cine("Crazy Lucky")) and
+            _card.ability.consumeable and _card.area == G.pack_cards
+        print("is_card_in_crazy_reverie_pack", is_consumeable_card_in_crazy_reverie_pack)
+
         if _card.area and (_card.area == G.pack_cards) then
-            -- Exception for 'Cine' cards since they can't be used while in a pack, like Planet cards.
-            if _card.ability.consumeable and not (_card.ability.set == 'Planet' or _card.ability.set == 'Cine') then
+            -- Exceptions for:
+            -- 1. 'Cine' cards since they can't be used while in a pack, like Planet cards.
+            -- 2. Consumeables inside of Reverie's "Pack" (crazy_pack) that can contain every type of card but consumeables cannot be used from them.
+            if _card.ability.consumeable and not (_card.ability.set == 'Planet' or _card.ability.set == 'Cine' or is_consumeable_card_in_crazy_reverie_pack) then
                 drag_target({
                     cover = G.DRAG_TARGETS.C_use,
                     colour = adjust_alpha(G.C.RED, 0.9),
@@ -107,38 +115,39 @@ function create_drag_target_from_card(_card)
                     end)
                 })
             else
-                -- Bunco: Blind 'cards' in packs
-                if BUNCOMOD and _card.ability and _card.ability.blind_card then
-                    drag_target({
-                        cover = G.DRAG_TARGETS.P_select,
-                        colour = adjust_alpha(G.C.GREEN, 0.9),
-                        text = { localize('b_select') },
-                        card = _card,
-                        active_check = (function(other)
+                drag_target({
+                    cover = G.DRAG_TARGETS.P_select,
+                    colour = adjust_alpha(G.C.GREEN, 0.9),
+                    text = { localize('b_select') },
+                    card = _card,
+                    active_check = (function(other)
+                        if is_consumeable_card_in_crazy_reverie_pack then
+                            return sticky_can_select_crazy_card(other)
+                        end
+                        -- Bunco: Blind 'cards' in packs
+                        if BUNCOMOD and _card.ability and _card.ability.blind_card then
                             return sticky_can_use_blind_card(other)
-                        end),
-                        release_func = (function(other)
+                        end
+                        return sticky_can_select_card(other)
+                    end),
+                    release_func = (function(other)
+                        if is_consumeable_card_in_crazy_reverie_pack and sticky_can_select_card(other) then
+                            G.FUNCS.use_card({ config = { ref_table = other } })
+                            return
+                        end
+                        -- Bunco: Blind 'cards' in packs
+                        if BUNCOMOD and _card.ability and _card.ability.blind_card then
                             if sticky_can_use_blind_card(other) then
                                 G.FUNCS.use_blind_card({ config = { ref_table = other } })
+                                return
                             end
-                        end)
-                    })
-                else
-                    drag_target({
-                        cover = G.DRAG_TARGETS.P_select,
-                        colour = adjust_alpha(G.C.GREEN, 0.9),
-                        text = { localize('b_select') },
-                        card = _card,
-                        active_check = (function(other)
-                            return sticky_can_select_card(other)
-                        end),
-                        release_func = (function(other)
-                            if sticky_can_select_card(other) then
-                                G.FUNCS.use_card({ config = { ref_table = other } })
-                            end
-                        end)
-                    })
-                end
+                        end
+                        if sticky_can_select_card(other) then
+                            G.FUNCS.use_card({ config = { ref_table = other } })
+                        end
+                    end)
+                })
+                has_select_drag_area = true
             end
         end
 
@@ -214,7 +223,7 @@ function create_drag_target_from_card(_card)
 
         -- Cryptid's "Code" cards inside packs.
         if _card.area and _card.area == G.pack_cards and Cryptid and _card.ability.consumeable and
-            _card.ability.set == 'Code' then
+            _card.ability.set == 'Code' and not has_select_drag_area then
             -- "Pull" drag target ("use" area is already covered above)
             drag_target({
                 cover        = G.DRAG_TARGETS.P_save,
@@ -234,7 +243,7 @@ function create_drag_target_from_card(_card)
 
         -- Pokermon Item/Energy cards inside packs.
         if _card.area and _card.area == G.pack_cards and pokermon and _card.ability.consumeable and
-            (_card.ability.set == 'Energy' or _card.ability.set == 'Item') then
+            (_card.ability.set == 'Energy' or _card.ability.set == 'Item') and not has_select_drag_area then
             -- "Save" drag target ("use" target is already covered above)
             drag_target({
                 cover        = G.DRAG_TARGETS.P_save,
@@ -254,7 +263,7 @@ function create_drag_target_from_card(_card)
 
         -- Reverie's "Cine" cards inside packs. "Select" drag target.
         if _card.area and _card.area == G.pack_cards and _card.ability.consumeable and
-            _card.ability.set == 'Cine' then
+            _card.ability.set == 'Cine' and not has_select_drag_area then
             drag_target({
                 cover        = G.DRAG_TARGETS.P_select,
                 colour       = adjust_alpha(G.C.GREEN, 0.9),
@@ -351,5 +360,11 @@ end
 sticky_can_buy_and_use = function(_card)
     local temp_config = { UIBox = { states = { visible = false } }, config = { ref_table = _card } }
     G.FUNCS.can_buy_and_use(temp_config)
+    return temp_config.config.button ~= nil;
+end
+
+sticky_can_select_crazy_card = function(_card)
+    local temp_config = { UIBox = { states = { visible = false } }, config = { ref_table = _card } }
+    G.FUNCS.can_select_crazy_card(temp_config)
     return temp_config.config.button ~= nil;
 end
