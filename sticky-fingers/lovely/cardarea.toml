@@ -5,6 +5,15 @@ version = "1.3.0"
 
 [[patches]]
 [patches.pattern]
+target = "cardarea.lua"
+pattern = "function CardArea:can_highlight(card)"
+position = "after"
+payload = "    if DTM.config.disable_action_buttons and self.config.type ~= 'hand' then return false end"
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
 match_indent = false
 pattern = '''
 elseif self.config.type == 'play' or self.config.type == 'shop' or self.config.type == 'consumeable' then
