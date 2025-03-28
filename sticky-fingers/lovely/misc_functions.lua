@@ -424,6 +424,42 @@ function create_drag_target_from_card(_card)
                             end
                         end)
                     })
+
+                    -- Cryptid's "Code" cards inside packs.
+                    if Cryptid and _card.ability.consumeable and _card.ability.set == 'Code' then
+                        -- "Pull" drag target ("use" area is already covered above)
+                        drag_target({
+                            cover = G.DRAG_TARGETS.P_save,
+                            colour = adjust_alpha(G.C.GREEN, 0.9),
+                            text = { localize('b_pull') },
+                            card = _card,
+                            active_check = (function(other)
+                                return sticky_can_reserve_card(other)
+                            end),
+                            release_func = (function(other)
+                                if sticky_can_reserve_card(other) then
+                                    G.FUNCS.reserve_card({ config = { ref_table = other } })
+                                end
+                            end)
+                        })
+                    elseif pokermon and _card.ability.consumeable and
+                        (_card.ability.set == 'Energy' or _card.ability.set == 'Item') then
+                        -- "Save" drag target ("use" target is already covered above)
+                        drag_target({
+                            cover        = G.DRAG_TARGETS.P_save,
+                            colour       = adjust_alpha(G.ARGS.LOC_COLOURS.pink, 0.9),
+                            text         = { localize('b_save') },
+                            card         = _card,
+                            active_check = function()
+                                return #G.consumeables.cards < G.consumeables.config.card_limit
+                            end,
+                            release_func = function(other)
+                                if #G.consumeables.cards < G.consumeables.config.card_limit then
+                                    G.FUNCS.reserve_card({ config = { ref_table = other } })
+                                end
+                            end,
+                        })
+                    end
                 else
                     drag_target({
                         cover = G.DRAG_TARGETS.P_select,
