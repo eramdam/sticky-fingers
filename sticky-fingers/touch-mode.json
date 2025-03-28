@@ -5,7 +5,6 @@
   "description": "Enables mobile-like touch controls to sell/use/select cards",
   "prefix": "eramdam.tc",
   "main_file": "main.lua",
-  "priority": 100000,
   "badge_colour": "666665",
   "badge_text_colour": "FFFFFF",
   "display_name": "Sticky Fingers",
