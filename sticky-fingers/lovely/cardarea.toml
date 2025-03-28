@@ -21,3 +21,15 @@ elseif self.config.type == 'play' or self.config.type == 'shop' or self.config.t
 position = "at"
 target = "cardarea.lua"
 times = 1
+
+[[patches]]
+[patches.pattern]
+match_indent = false
+pattern = "function CardArea:can_highlight(card)"
+payload = '''
+    if DTM.config.disable_action_buttons and self.config.type ~= 'hand' then return false end
+    
+'''
+position = "after"
+target = "cardarea.lua"
+times = 1

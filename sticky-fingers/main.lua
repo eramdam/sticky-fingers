@@ -1,12 +1,11 @@
 if SMODS.Atlas then
   SMODS.Atlas({
-      key = "modicon",
-      path = "modicon.png",
-      px = 32,
-      py = 32
+    key = "modicon",
+    path = "modicon.png",
+    px = 32,
+    py = 32
   })
 end
-
 
 DTM = SMODS.current_mod
 
@@ -24,12 +23,22 @@ DTM.config_tab = function()
       create_toggle({
         id = "vanilla_joker_sell",
         label = "Vanilla Joker sell target",
-        info = {"Use the mobile Joker sell target. Beware of accidental sells!"},
+        info = { "Use the mobile Joker sell target. Beware of accidental sells!" },
         ref_table = DTM.config,
         ref_value = "vanilla_joker_sell",
         callback = function()
           DTM:save_config()
         end,
+      }),
+      create_toggle({
+        id = "disable_action_buttons",
+        label = "Disable action buttons",
+        info = { "Removes the action buttons from the PC version of the game." },
+        ref_table = DTM.config,
+        ref_value = "disable_action_buttons",
+        callback = function()
+          DTM:save_config()
+        end
       })
     }
   }
