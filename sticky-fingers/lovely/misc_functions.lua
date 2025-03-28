@@ -409,24 +409,28 @@ function create_drag_target_from_card(_card)
             if _card.area == G.pack_cards then
                 -- is the card a consumeable?
                 if _card.ability.consumeable then
-                    local is_planet = _card.ability.set == 'Planet'
-                    drag_target({
-                        cover = (is_planet and G.DRAG_TARGETS.P_select) or G.DRAG_TARGETS.C_use,
-                        colour = adjust_alpha((is_planet and G.C.GREEN) or G.C.RED, 0.9),
-                        text = { localize('b_use') },
-                        card = _card,
-                        active_check = (function(other)
-                            return other:can_use_consumeable()
-                        end),
-                        release_func = (function(other)
-                            if other:can_use_consumeable() then
-                                G.FUNCS.use_card({ config = { ref_table = other } })
-                            end
-                        end)
-                    })
+                    local make_use_drag_target = function()
+                        local is_planet = _card.ability.set == 'Planet'
+                        drag_target({
+                            cover = (is_planet and G.DRAG_TARGETS.P_select) or G.DRAG_TARGETS.C_use,
+                            colour = adjust_alpha((is_planet and G.C.GREEN) or G.C.RED, 0.9),
+                            text = { localize('b_use') },
+                            card = _card,
+                            active_check = (function(other)
+                                return other:can_use_consumeable()
+                            end),
+                            release_func = (function(other)
+                                if other:can_use_consumeable() then
+                                    G.FUNCS.use_card({ config = { ref_table = other } })
+                                end
+                            end)
+                        })
+                    end
+
 
                     -- Cryptid's "Code" cards inside packs.
                     if Cryptid and _card.ability.consumeable and _card.ability.set == 'Code' then
+                        make_use_drag_target()
                         -- "Pull" drag target ("use" area is already covered above)
                         drag_target({
                             cover = G.DRAG_TARGETS.P_save,
@@ -442,8 +446,10 @@ function create_drag_target_from_card(_card)
                                 end
                             end)
                         })
+                        -- Pokermon Item/Energy cards inside packs.
                     elseif pokermon and _card.ability.consumeable and
                         (_card.ability.set == 'Energy' or _card.ability.set == 'Item') then
+                        make_use_drag_target()
                         -- "Save" drag target ("use" target is already covered above)
                         drag_target({
                             cover        = G.DRAG_TARGETS.P_save,
@@ -459,6 +465,23 @@ function create_drag_target_from_card(_card)
                                 end
                             end,
                         })
+                    elseif _card.ability.set == 'Cine' then
+                        drag_target({
+                            cover        = G.DRAG_TARGETS.P_select,
+                            colour       = adjust_alpha(G.C.GREEN, 0.9),
+                            text         = { localize('b_select') },
+                            card         = _card,
+                            active_check = (function(other)
+                                return sticky_can_select_card(other)
+                            end),
+                            release_func = (function(other)
+                                if sticky_can_select_card(other) then
+                                    G.FUNCS.use_card({ config = { ref_table = other } })
+                                end
+                            end),
+                        })
+                    else
+                        make_use_drag_target()
                     end
                 else
                     drag_target({
