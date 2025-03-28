@@ -91,8 +91,7 @@ function create_drag_target_from_card(_card)
 
             -- is the card in a pack?
             if _card.area == G.pack_cards then
-                local is_consumeable_card_in_crazy_reverie_pack = Reverie and
-                    (Reverie.is_cine_or_reverie(_card) or Reverie.find_used_cine("Crazy Lucky")) and
+                local is_consumeable_card_in_crazy_reverie_pack = Reverie and SMODS.OPENED_BOOSTER.label == 'Pack' and
                     _card.ability.consumeable and _card.area == G.pack_cards
 
                 -- is the card a consumeable?
@@ -116,6 +115,8 @@ function create_drag_target_from_card(_card)
                     end
 
                     local needs_areas = true
+                    -- Pokermon has a "Super Rod" voucher that lets the player save any consumeable from packs and not just Energy/Item cards.
+                    local pokermon_has_save_all = G.GAME.poke_save_all and not SMODS.OPENED_BOOSTER.label:find("Wish")
 
                     -- Cryptid's "Code" cards inside packs.
                     if Cryptid and _card.ability.consumeable and _card.ability.set == 'Code' then
@@ -137,20 +138,22 @@ function create_drag_target_from_card(_card)
                         })
                         needs_areas = false
                         -- Pokermon Item/Energy cards inside packs.
-                    elseif pokermon and _card.ability.consumeable and (_card.ability.set == 'Energy' or _card.ability.set == 'Item') then
+                    elseif pokermon and _card.ability.consumeable and (_card.ability.set == 'Energy' or _card.ability.set == 'Item' or pokermon_has_save_all) then
                         if not is_consumeable_card_in_crazy_reverie_pack then
                             draw_use_drag_target()
+
                             -- "Save" drag target ("use" target is already covered above)
                             drag_target({
                                 cover        = G.DRAG_TARGETS.P_save,
-                                colour       = adjust_alpha(G.ARGS.LOC_COLOURS.pink, 0.9),
+                                colour       = adjust_alpha(
+                                    pokermon_has_save_all and G.C.GREEN or G.ARGS.LOC_COLOURS.pink, 0.9),
                                 text         = { localize('b_save') },
                                 card         = _card,
-                                active_check = function()
-                                    return #G.consumeables.cards < G.consumeables.config.card_limit
+                                active_check = function(other)
+                                    return sticky_can_reserve_card(other)
                                 end,
                                 release_func = function(other)
-                                    if #G.consumeables.cards < G.consumeables.config.card_limit then
+                                    if sticky_can_reserve_card(other) then
                                         G.FUNCS.reserve_card({ config = { ref_table = other } })
                                     end
                                 end,
