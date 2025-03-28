@@ -140,7 +140,24 @@ function create_drag_target_from_card(_card)
                         -- Pokermon Item/Energy cards inside packs.
                     elseif pokermon and _card.ability.consumeable and (_card.ability.set == 'Energy' or _card.ability.set == 'Item' or pokermon_has_save_all) then
                         if not is_consumeable_card_in_crazy_reverie_pack then
-                            draw_use_drag_target()
+                            if not pokermon_has_save_all then
+                                draw_use_drag_target()
+                            else
+                                drag_target({
+                                    cover = G.DRAG_TARGETS.C_use,
+                                    colour = adjust_alpha((is_planet and G.C.GREEN) or G.C.RED, 0.9),
+                                    text = { localize('b_use') },
+                                    card = _card,
+                                    active_check = (function(other)
+                                        return other:can_use_consumeable()
+                                    end),
+                                    release_func = (function(other)
+                                        if other:can_use_consumeable() then
+                                            G.FUNCS.use_card({ config = { ref_table = other } })
+                                        end
+                                    end)
+                                })
+                            end
 
                             -- "Save" drag target ("use" target is already covered above)
                             drag_target({
