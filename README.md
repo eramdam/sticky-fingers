@@ -2,7 +2,7 @@
 
 A mod that brings "touch" controls to Balatro on PC/Mac, making it a bit more fun to play on desktop and improving the experience on touch-based PCs like the Steam Deck! The default mouse controls are kept intact.
 
-![](meta/balatro-touch-mode-0001.png)
+![](https://github.com/eramdam/sticky-fingers/blob/meta/balatro-touch-mode-0001.png?raw=true)
 
 <small>Wiimote cursor from [https://primm.gay/extras/other/cursors/](https://primm.gay/extras/other/cursors/)</small>
 
