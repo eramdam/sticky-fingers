@@ -2,7 +2,7 @@
 
 A mod that brings "touch" controls to Balatro on PC/Mac, making it a bit more fun to play on desktop and improving the experience on touch-based PCs like the Steam Deck! The default mouse controls are kept intact.
 
-![](meta/balatro-touch-mode-0001.png)
+![](https://github.com/eramdam/sticky-fingers/blob/meta/balatro-touch-mode-0001.png?raw=true)
 
 <small>Wiimote cursor from [https://primm.gay/extras/other/cursors/](https://primm.gay/extras/other/cursors/)</small>
 
@@ -10,12 +10,13 @@ A mod that brings "touch" controls to Balatro on PC/Mac, making it a bit more fu
 
 This mod has been tested against **Balatro 1.0.1o** (current patch as of February 26, 2025) on PC/Mac using code from the same patch on iOS. It has also been reported to work great on Steam Deck.
 
-As of 1.3.0, this mod should be compatible with the following mods:
+As of 1.4.0, this mod should be compatible with the following mods:
 
 - [Cryptid](https://github.com/MathIsFun0/Cryptid/)/[Talisman](https://github.com/MathIsFun0/Talisman)
 - [Pokermon](https://github.com/InertSteak/Pokermon)
 - [Prism](https://github.com/blazingulag/Prism/)
 - [Reverie](https://github.com/jumbocarrot0/reverie)
+- [Bunco](https://github.com/Firch/Bunco) (partially)
 
 Please let me know of mods that add consumable cards that may need additional support.
 

@@ -1,0 +1,10 @@
+[manifest]
+dump_lua = true
+priority = 0
+version = "1.4.0"
+
+[[patches]]
+[patches.copy]
+position = "append"
+sources = ["lovely/ui_definitions.lua"]
+target = "functions/UI_definitions.lua"
