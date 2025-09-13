@@ -16,7 +16,7 @@ As of 1.4.0, this mod should be compatible with the following mods:
 - [Pokermon](https://github.com/InertSteak/Pokermon)
 - [Prism](https://github.com/blazingulag/Prism/)
 - [Reverie](https://github.com/jumbocarrot0/reverie)
-- [Bunco](https://github.com/Firch/Bunco) (partially)
+- [Bunco](https://github.com/jumbocarrot0/Bunco) (partially)
 
 Please let me know of mods that add consumable cards that may need additional support.
 
