@@ -34,7 +34,7 @@ times = 1
 [patches.pattern]
 match_indent = false
 pattern = '''
-self.cursor_down.time = G.TIMERS.TOTAL
+self:L_cursor_press(self.L_cursor_queue.x, self.L_cursor_queue.y)
 '''
 payload = '''
 self.cursor_down.uptime = G.TIMERS.UPTIME
