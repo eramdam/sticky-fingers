@@ -17,7 +17,7 @@ function create_drag_target_from_card(_card)
             P_switch = Moveable { T = { x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w - 0.1, h = 4.5 } },
         }
 
-        if DTM.config.vanilla_joker_sell == false then
+        if DTM and DTM.config.vanilla_joker_sell == false then
             G.DRAG_TARGETS.J_sell = Moveable { T = { x = G.deck.T.x + 0.2, y = G.deck.T.y - 5.1, w = G.deck.T.w - 0.1, h = 4.5 } }
         else
             G.DRAG_TARGETS.J_sell = G.DRAG_TARGETS.J_sell_vanilla
@@ -91,7 +91,7 @@ function create_drag_target_from_card(_card)
 
             -- is the card in a pack?
             if _card.area == G.pack_cards then
-                local is_consumeable_card_in_crazy_reverie_pack = Reverie and SMODS.OPENED_BOOSTER.label == 'Pack' and
+                local is_consumeable_card_in_crazy_reverie_pack = Reverie and SMODS and SMODS.OPENED_BOOSTER.label == 'Pack' and
                     _card.ability.consumeable and _card.area == G.pack_cards
 
                 -- is the card a consumeable?
@@ -116,7 +116,7 @@ function create_drag_target_from_card(_card)
 
                     local needs_areas = true
                     -- Pokermon has a "Super Rod" voucher that lets the player save any consumeable from packs and not just Energy/Item cards.
-                    local pokermon_has_save_all = G.GAME.poke_save_all and not SMODS.OPENED_BOOSTER.label:find("Wish")
+                    local pokermon_has_save_all = SMODS and G.GAME.poke_save_all and not SMODS.OPENED_BOOSTER.label:find("Wish")
 
                     -- Cryptid's "Code" cards inside packs.
                     if Cryptid and _card.ability.consumeable and _card.ability.set == 'Code' then

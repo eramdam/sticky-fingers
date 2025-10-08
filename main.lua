@@ -1,3 +1,5 @@
+if not SMODS then return end
+
 if SMODS.Atlas then
   SMODS.Atlas({
       key = "modicon",
@@ -6,7 +8,6 @@ if SMODS.Atlas then
       py = 32
   })
 end
-
 
 DTM = SMODS.current_mod
 

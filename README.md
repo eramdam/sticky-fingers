@@ -22,7 +22,7 @@ Please let me know of mods that add consumable cards that may need additional su
 
 # Installation
 
-0. This mod is made for [**Steammodded 1.x**](https://github.com/Steamodded/smods) and [lovely](https://github.com/ethangreen-dev/lovely-injector) so you will need to install them first [as explained here](https://github.com/Steamodded/smods/wiki). **Disclaimer:** You will want to use the newest [tagged release of Steammodded](https://github.com/Steamodded/smods/releases) as the version on `main` might be broken/unstable.
+0. This mod is made for [lovely](https://github.com/ethangreen-dev/lovely-injector) so you will need to install it first [as explained here](https://github.com/Steamodded/smods/wiki). It has optional support for [**Steamodded 1.x**](https://github.com/Steamodded/smods) and you will want to use the newest [tagged release of Steamodded](https://github.com/Steamodded/smods/releases) as the version on `main` might be broken/unstable.
 1. Download the newest version of the mod from the [Releases tab](https://github.com/eramdam/balatro-mods/releases)
 2. Extract the .zip file and move the `sticky-fingers` folder into your Mods file
 3. Launch Balatro and enable the mod in the `Mods` panel
